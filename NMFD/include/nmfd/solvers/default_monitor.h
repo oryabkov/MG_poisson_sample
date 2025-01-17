@@ -25,7 +25,7 @@
 #endif
 #include <scfd/utils/logged_obj_base.h>
 #include <scfd/utils/log.h>
-#include <detail/vector_wrap.h>
+#include <nmfd/detail/vector_wrap.h>
 
 namespace nmfd
 {
@@ -108,8 +108,7 @@ private:
     mutable bool is_valid_number_;
     T rhs_norm_;
     T min_resid_norm_;
-    buf_arr_t buf_;
-    vector_type &min_resid_norm_x_;
+    buf_arr_t min_resid_norm_x_;
 
 
 protected:
@@ -121,14 +120,14 @@ public:
     default_monitor(const vector_operations_type &vec_ops, 
                     Log *log = NULL, const params &prms = params() ): 
         logged_obj_type(log, prms),
-        vec_ops_(vec_ops), buf_(&vec_ops),
-        min_resid_norm_x_(buf_[0]), prms_(prms)
+        vec_ops_(vec_ops), min_resid_norm_x_(vec_ops),
+        prms_(prms)
     {
        
         max_iters_num_save_ = prms_.max_iters_num;
         if (prms_.out_min_resid_norm) 
         {
-            buf_.init();
+            //buf_.init();
         }
         rel_tol_save_ = prms_.rel_tol;
     }
@@ -167,12 +166,12 @@ public:
     {
         rhs_norm_ = vec_ops_.norm(rhs);
         iters_performed_ = 0;
-        if (prms_.out_min_resid_norm) buf_.start_use_all();
+        if (prms_.out_min_resid_norm) min_resid_norm_x_.start_use();
         if (prms_.save_convergence_history) convergence_history_.clear();
     }
     void stop()
     {
-        if (prms_.out_min_resid_norm) buf_.stop_use_all();
+        if (prms_.out_min_resid_norm) min_resid_norm_x_.stop_use();
     }
 
     T rel_tol()const { return prms_.rel_tol; }
@@ -220,7 +219,7 @@ public:
         else
             return norm_abs/rel_tol_base();
     }
-    const vector_type &min_resid_norm_x()const { return min_resid_norm_x_; }
+    const vector_type &min_resid_norm_x()const { return *min_resid_norm_x_; }
 
     const std::vector<std::pair<int,T> > &convergence_history()const { return convergence_history_; }
 
@@ -258,7 +257,7 @@ public:
         if (out_min_resid_norm()) {
             if ((iters_performed() == 0)||(resid_norm() < min_resid_norm_)) {
                 min_resid_norm_ = resid_norm();
-                vec_ops_.assign(x, min_resid_norm_x_);
+                vec_ops_.assign(x, *min_resid_norm_x_);
             }
         }
         

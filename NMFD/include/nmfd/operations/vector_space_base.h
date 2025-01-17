@@ -1,12 +1,12 @@
-#ifndef __SCFD_VECTOR_SPACE_BASE_H__
-#define __SCFD_VECTOR_SPACE_BASE_H__
+#ifndef __NMFD_VECTOR_SPACE_BASE_H__
+#define __NMFD_VECTOR_SPACE_BASE_H__
 
 #include "vector_factory_base.h"
 #include "vector_operations_base.h"
 
-namespace scfd
+namespace nmfd
 {
-namespace linspace
+namespace operations
 {
 
 template<class Type, class VectorType, class MultiVectorType, class Ordinal = std::ptrdiff_t>

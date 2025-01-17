@@ -127,9 +127,9 @@ private:
 }
 
 template<class Type, class VectorType, class MultiVectorType, class Log/*, class Cardinal = std::size_t*/, class Ordinal = std::ptrdiff_t>
-class cpu_vector_space: public scfd::linspace::vector_operations_base<Type, VectorType, MultiVectorType/*, Log, Cardinal*/, Ordinal>
+class cpu_vector_space: public nmfd::operations::vector_operations_base<Type, VectorType, MultiVectorType/*, Log, Cardinal*/, Ordinal>
 {
-    using parent_t = vector_operations_base<
+    using parent_t = nmfd::operations::vector_operations_base<
             Type,
             VectorType,
             MultiVectorType,

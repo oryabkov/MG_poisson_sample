@@ -24,13 +24,13 @@
 #include <nlohmann/json.hpp>
 #endif
 #include "detail/monitor_call_wrap.h"
-#include "detail/algo_utils_hierarchy.h"
-#include "detail/algo_params_hierarchy.h"
-#include "detail/algo_hierarchy_creator.h"
+#include <nmfd/detail/algo_utils_hierarchy.h>
+#include <nmfd/detail/algo_params_hierarchy.h>
+#include <nmfd/detail/algo_hierarchy_creator.h>
 #include "iter_solver_base.h"
 #include "detail/dense_operations.h"
 #include "detail/residual_regularization_dummy.h"
-#include "preconditioners/dummy.h"
+#include <nmfd/preconditioners/dummy.h>
 
 namespace nmfd
 {

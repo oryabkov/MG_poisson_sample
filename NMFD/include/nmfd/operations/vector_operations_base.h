@@ -1,14 +1,14 @@
-#ifndef __SCFD_VECTOR_OPERATIONS_BASE_H__
-#define __SCFD_VECTOR_OPERATIONS_BASE_H__
+#ifndef __NMFD_VECTOR_OPERATIONS_BASE_H__
+#define __NMFD_VECTOR_OPERATIONS_BASE_H__
 
 #include <map>
 #include <utility>
 #include <scfd/utils/logged_obj_base.h>
 
 
-namespace scfd
+namespace nmfd
 {
-namespace linspace
+namespace operations
 {
 
 // namespace detail

@@ -22,8 +22,8 @@
 #ifdef NMFD_ENABLE_NLOHMANN
 #include <nlohmann/json.hpp>
 #endif
-#include <common/detail/vector_wrap.h>
-#include <glued_matrix_operator.h>
+#include <nmfd/detail/vector_wrap.h>
+//#include <glued_matrix_operator.h>
 #include "preconditioner_interface.h"
 
 namespace nmfd

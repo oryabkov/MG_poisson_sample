@@ -8,8 +8,8 @@
 #include "preconditioner_advection.h"
 #include "preconditioner_diffusion.h"
 #include "preconditioner_elliptic.h"
-#include <solver/monitor_krylov.h>
-#include <solver/gmres.h>
+#include <nmfd/solvers/monitor_krylov.h>
+#include <nmfd/solvers/gmres.h>
 #include "residual_regularization_test.h"
 
 #define M_PIl 3.141592653589793238462643383279502884L
@@ -22,20 +22,20 @@ int main(int argc, char const *args[])
     using T = double;
     using T_vec = double*;
     using T_mvec = double*;
-    using vec_ops_t = scfd::linspace::cpu_vector_space<T, T_vec, T_mvec, log_t>;
+    using vec_ops_t = nmfd::cpu_vector_space<T, T_vec, T_mvec, log_t>;
     using lin_op_adv_t = tests::linear_operator_advection<vec_ops_t, log_t>;
     using lin_op_diff_t = tests::linear_operator_diffusion<vec_ops_t, log_t>;
     using lin_op_elliptic_t = tests::linear_operator_elliptic<vec_ops_t, log_t>;
     using prec_adv_t = tests::preconditioner_advection<vec_ops_t, lin_op_adv_t, log_t>;
     using prec_diff_t = tests::preconditioner_diffusion<vec_ops_t, lin_op_diff_t, log_t>;
     using prec_elliptic_t = tests::preconditioner_elliptic<vec_ops_t, lin_op_elliptic_t, log_t>;
-    using monitor_t = numerical_algos::lin_solvers::monitor_krylov<vec_ops_t, log_t>;
-    using gmres_adv_t = numerical_algos::lin_solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_adv_t, prec_adv_t >;
-    using gmres_diff_t = numerical_algos::lin_solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_diff_t, prec_diff_t >;
-    using gmres_adv_noprec_t = numerical_algos::lin_solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_adv_t >;
-    using gmres_diff_noprec_t = numerical_algos::lin_solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_diff_t >;
-    using residual_reg_t = numerical_algos::lin_solvers::detail::residual_regularization_test<vec_ops_t, log_t>;
-    using gmres_elliptic_w_reg_t = numerical_algos::lin_solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_elliptic_t, prec_elliptic_t, residual_reg_t>;
+    using monitor_t = nmfd::solvers::monitor_krylov<vec_ops_t, log_t>;
+    using gmres_adv_t = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_adv_t, prec_adv_t >;
+    using gmres_diff_t = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_diff_t, prec_diff_t >;
+    using gmres_adv_noprec_t = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_adv_t >;
+    using gmres_diff_noprec_t = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_diff_t >;
+    using residual_reg_t = nmfd::solvers::detail::residual_regularization_test<vec_ops_t, log_t>;
+    using gmres_elliptic_w_reg_t = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_elliptic_t, prec_elliptic_t, residual_reg_t>;
 
 
 
