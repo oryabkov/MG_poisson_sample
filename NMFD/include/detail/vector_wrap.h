@@ -19,9 +19,7 @@
 
 #include <cassert>
 
-namespace scfd
-{
-namespace linspace
+namespace nmfd
 {
 namespace detail
 {
@@ -85,7 +83,6 @@ struct vector_wrap
 };
 
 }   // namespace detail
-}   // namespace linspace
 }   // namespace scfd
 
 #endif

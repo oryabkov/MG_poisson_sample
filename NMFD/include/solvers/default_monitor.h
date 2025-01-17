@@ -25,7 +25,7 @@
 #endif
 #include <scfd/utils/logged_obj_base.h>
 #include <scfd/utils/log.h>
-#include <detail/vectors_arr_wrap_static.h>
+#include <detail/vector_wrap.h>
 
 namespace nmfd
 {
@@ -43,7 +43,7 @@ public:
 
 private:
     using T = scalar_type;
-    using buf_arr_t = detail::vectors_arr_wrap_static<VectorOperations,1>;
+    using buf_arr_t = detail::vector_wrap<VectorOperations,true,false>;
     const vector_operations_type &vec_ops_;
 
 public:

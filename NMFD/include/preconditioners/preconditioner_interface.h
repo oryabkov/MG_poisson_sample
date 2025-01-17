@@ -18,9 +18,9 @@
 #define __NMFD_PRECONDITIONER_INTERFACE_H__
 
 #include <memory>
-#include <solver/detail/algo_utils_hierarchy.h>
-#include <solver/detail/algo_params_hierarchy.h>
-#include <solver/detail/algo_hierarchy_creator.h>
+#include <nmfd/detail/algo_utils_hierarchy.h>
+#include <nmfd/detail/algo_params_hierarchy.h>
+#include <nmfd/detail/algo_hierarchy_creator.h>
 
 namespace nmfd
 {
