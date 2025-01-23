@@ -1,9 +1,9 @@
 SCFD_INCLUDE_DIR = ../SCFD/include
 
-HEADERS=VecOpBase.hpp VecOp.hpp VecOpKernels.hpp
-
+#HEADERS=VecOpBase.hpp VecSpace.hpp VecSpaceKernel.hpp
+INCLUDE_DIRS=-I./kernels -I./operations
 INCLUDE_SCFD=-I$(SCFD_INCLUDE_DIR)
 COMPILE_FLAGS=-O3 $(INCLUDE_SCFD) $(CFLAGS)
 
-poisson_jacobi_func_hip.bin: $(HEADERS) $(SOURCE) vec_op_test.cpp
-	hipcc $(COMPILE_FLAGS) $(INCLUDE_SCFD) -DPOISSON_SOLVER_HIP $(SOURCE) vec_op_test.cpp -o vec_op_test.bin
+test_hip.bin: $(HEADERS) $(SOURCE) test.cpp
+	hipcc $(COMPILE_FLAGS) $(INCLUDE_SCFD) $(INCLUDE_DIRS) -DPOISSON_SOLVER_HIP $(SOURCE) test.cpp -o test.bin

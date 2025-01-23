@@ -1,7 +1,7 @@
 #ifndef __VECTOR_OPERATIONS_H__
 #define __VECTOR_OPERATIONS_H__
 
-#include "VecOpKernels.hpp"
+#include "VecSpaceKernel.hpp"
 #include "VecOpBase.hpp"
 
 #include <scfd/static_vec/vec.h>
@@ -24,7 +24,7 @@ class vector_space : vector_operations_base<Type, VectorType, Ordinal>
 
 public:
     static const int dim    = Dim;
-
+    using value_type        = Type;
     using scalar_t          = Type;
     using ordinal_t         = Ordinal;
     
@@ -54,6 +54,8 @@ private:
 
 public:
     vector_space(idx_nd_t const v): range(v), sz(v.components_prod()), helper(range) {};
+
+    idx_nd_t get_range() const noexcept { return range; }
 
     //TODO
 /*

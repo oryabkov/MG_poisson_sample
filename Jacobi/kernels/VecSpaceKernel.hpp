@@ -1,5 +1,5 @@
-#ifndef __VECTOR_OPERATIONS_KERNELS_H__
-#define __VECTOR_OPERATIONS_KERNELS_H__
+#ifndef __VECTOR_SPACE_KERNEL_HPP__
+#define __VECTOR_SPACE_KERNEL_HPP__
 
 #include <utility>
 
@@ -9,9 +9,6 @@
  * Backend independent kernels implementing vector operations
  * to run on heterogenous devices.
  ************************************************************/
-
-namespace operations
-{
 
 namespace kernels
 {
@@ -100,7 +97,5 @@ namespace kernels
     };
 
 }// namespace kernels
-
-}// namespace operations
 
 #endif
