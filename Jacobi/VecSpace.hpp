@@ -1,5 +1,5 @@
-#ifndef __VECTOR_OPERATIONS_H__
-#define __VECTOR_OPERATIONS_H__
+#ifndef __VECTOR_SPACE_HPP__
+#define __VECTOR_SPACE_HPP__
 
 #include "VecSpaceKernel.hpp"
 #include "VecOpBase.hpp"
@@ -11,15 +11,15 @@ namespace operations
 
 template
 <
-    class Type, 
+    class Type,
     int   Dim,
     class Backend, // class which defines for_each, reduce and memory types.
-    class Ordinal=std::ptrdiff_t, 
-    /****************************/ 
+    class Ordinal=std::ptrdiff_t,
+    /****************************/
     class VectorType=scfd::arrays::array_nd<Type, Dim, typename Backend::memory_type>,
     class IdxType=scfd::static_vec::vec<Ordinal, Dim>
 >
-class vector_space : vector_operations_base<Type, VectorType, Ordinal> 
+class vector_space : vector_operations_base<Type, VectorType, Ordinal>
 {
 
 public:
@@ -27,7 +27,7 @@ public:
     using value_type           = Type;
     using scalar_type          = Type;
     using ordinal_type         = Ordinal;
-    
+
     using for_each_nd_type     = typename Backend::for_each_nd_type;
     using reduce_type          = typename Backend::reduce_type;
     using memory_type          = typename Backend::memory_type;
@@ -63,7 +63,7 @@ public:
 
     [[nodiscard]] virtual bool is_valid_number(const vector_type &x) const = 0;
     reduction operations:
-*/  
+*/
     [[nodiscard]] scalar_type scalar_prod(const vector_type &x, const vector_type &y) const override
     {
         for_each_nd_inst(shur_prod_kernel{x, y, helper}, range);
@@ -74,7 +74,7 @@ public:
     {
         return reduce_inst(sz, x.raw_ptr(), scalar_type{0});
     }
-    
+
     //TODO
     [[nodiscard]] scalar_type asum(const vector_type &x) const override
     {
@@ -91,19 +91,19 @@ public:
     //L2 emulation for the vector norm2:=sqrt(sum(x^2)/sz_)
     [[nodiscard]] scalar_type norm2(const vector_type &x) const override
     {
-    
+
         for_each_nd_inst(shur_prod_kernel{x, x, helper}, range);
         return std::sqrt(reduce_inst(sz, helper.raw_ptr(), scalar_type{0}) / sz);
     }
-    
+
     //standard vector norm_sq:=sum(x^2)
     [[nodiscard]] scalar_type norm_sq(const vector_type &x) const override
     {
-        
+
         for_each_nd_inst(shur_prod_kernel{x, x, helper}, range);
         return reduce_inst(sz, helper.raw_ptr(), scalar_type{0});
     }
-    
+
     //L2 emulation for the vector norm2_sq:=sum(x^2)/sz_
     [[nodiscard]] scalar_type norm2_sq(const vector_type &x) const override
     {
@@ -112,19 +112,19 @@ public:
     }
 
 public:
-    //calc: x := <vector_type with all elements equal to given scalar value> 
+    //calc: x := <vector_type with all elements equal to given scalar value>
     void assign_scalar(const scalar_type scalar, vector_type& x) const override
     {
         for_each_nd_inst(assign_scalar_kernel{scalar, x}, range);
     }
 
-    //calc: x := mul_x*x + <vector_type of all scalar value> 
+    //calc: x := mul_x*x + <vector_type of all scalar value>
     void add_mul_scalar(const scalar_type scalar, const scalar_type mul_x, vector_type& x) const override
     {
         for_each_nd_inst(add_mul_scalar_kernel{scalar, mul_x, x}, range);
     }
-    
-    //calc: x := scale*x 
+
+    //calc: x := scale*x
     void scale(const scalar_type scale, vector_type &x) const override
     {
         for_each_nd_inst(scale_kernel{scale, x}, range);
@@ -134,7 +134,7 @@ public:
     void assign(const vector_type& x, vector_type& y) const override
     {
         for_each_nd_inst(assign_kernel{x, y}, range);
-    } 
+    }
 
     //calc: y := mul_x*x
     void assign_lin_comb(const scalar_type mul_x, const vector_type& x, vector_type& y) const override

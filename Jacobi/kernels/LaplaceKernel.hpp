@@ -1,16 +1,17 @@
-#ifndef __LAPLACE_OPERATOR_KERNEL__
-#define __LAPLACE_OPERATOR_KERNEL__
+#ifndef __LAPLACE_OPERATOR_KERNEL_HPP__
+#define __LAPLACE_OPERATOR_KERNEL_HPP__
 
 namespace kernels
 {
 
-    template <class IdxND, class Scalar, class VectorType, class GridStep>
+    template <class IdxND, class Scalar, class VectorType, class GridStep, class BoundaryCond>
     struct laplace_op
     {
 
         VectorType in, out;
         IdxND        range;
         GridStep      step;
+        BoundaryCond  cond;
 
         __DEVICE_TAG__ void operator()(const IdxND idx) const
         {
@@ -26,13 +27,13 @@ namespace kernels
 
                 auto curr  = in(idx);
 
-                auto prev  = idx[j] ==     0u ? in(idx) : in(idx - ej);
-                auto next  = idx[j] == N - 1u ? in(idx) : in(idx + ej);
+                auto prev  = idx[j] ==     0u ? cond. left[j] * in(idx) : in(idx - ej);
+                auto next  = idx[j] == N - 1u ? cond.right[j] * in(idx) : in(idx + ej);
 
                 laplace   += (2 * curr - next - prev) / (hj * hj);
             }
 
-            out(idx) = laplace;
+            out(idx) = laplace; // assign -delta u;
         }
     };
 

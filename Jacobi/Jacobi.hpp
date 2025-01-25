@@ -34,7 +34,7 @@ public:
                                           l_op(laplace_op), 
                                           p_op(precond) {} 
 
-    scalar_type make_step(const vector_type &rhs, vector_type &tmp, vector_type &x) // todo rm tmp 
+    scalar_type make_step(const vector_type &rhs, vector_type &tmp, vector_type &x) 
     {
         // tmp := Laplace(x) = Ax;
         l_op->apply(x, tmp);
@@ -49,6 +49,7 @@ public:
         
         return residual;
     }
+
 };
 
 #endif

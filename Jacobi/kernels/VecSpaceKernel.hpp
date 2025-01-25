@@ -13,7 +13,7 @@
 namespace kernels
 {
     template <class IdxND, class VectorType>
-    struct shur_prod 
+    struct shur_prod
     {
         VectorType x, y, z;
 
@@ -47,7 +47,7 @@ namespace kernels
         }
     };
 
-    
+
     template <class IdxND, class Scalar, class VectorType>
     struct scale
     {
@@ -82,7 +82,7 @@ namespace kernels
             y(idx) = mul_x * x(idx);
         }
     };
-    
+
     template <class IdxND, class Scalar, class VectorType>
     struct add_lin_comb
     {
