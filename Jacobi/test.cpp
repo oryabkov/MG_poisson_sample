@@ -17,32 +17,32 @@
 static constexpr int current_dim = 3;
 
 using scalar        = float;
-using grid_step_t   = scfd::static_vec::vec<scalar, current_dim>;
-using idx_nd_t      = scfd::static_vec::vec<int   , current_dim>;
+using grid_step_type   = scfd::static_vec::vec<scalar, current_dim>;
+using idx_nd_type      = scfd::static_vec::vec<int   , current_dim>;
 
 struct hip_backend
 {
-    using memory_t      = scfd::memory::hip_device;
-    using for_each_nd_t = scfd::for_each::hip_nd<current_dim>;
-    using reduce_t      = scfd::thrust_reduce<>;
+    using memory_type      = scfd::memory::hip_device;
+    using for_each_nd_type = scfd::for_each::hip_nd<current_dim>;
+    using reduce_type      = scfd::thrust_reduce<>;
 };
 
 using vector_space     = operations::vector_space<scalar, current_dim, hip_backend>;
-using laplace_operator = operators::laplace_operator<vector_space, grid_step_t>;
+using laplace_operator = operators::laplace_operator<vector_space, grid_step_type>;
 using preconditioner   = preconditioners::jacobi_preconditioner<vector_space>;
 
 using jacobi_solver    = jacobi<vector_space, laplace_operator, preconditioner>;
 
-using vector_t      = typename vector_space::vector_t;
-using vector_view_t = typename vector_t::view_type; 
+using vector_type      = typename vector_space::vector_type;
+using vector_view_type = typename vector_type::view_type; 
 
 int main()
 {
 
-    auto range = 10   * idx_nd_t   ::make_ones();
-    auto step  = 0.005f * grid_step_t::make_ones();
+    auto range = 10     * idx_nd_type   ::make_ones();
+    auto step  = 0.005f * grid_step_type::make_ones();
     
-    vector_t x(range), y(range), rhs(range);
+    vector_type x(range), y(range), rhs(range);
     
     auto vspace  = std::make_shared<vector_space>(range);
     auto l_op    = std::make_shared<laplace_operator>(vspace, step);

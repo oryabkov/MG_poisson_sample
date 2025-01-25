@@ -12,12 +12,12 @@ template
 class jacobi
 {
 public:
-    using scalar_t = typename VectorOp::scalar_t;
-    using vector_t = typename VectorOp::vector_t; 
+    using scalar_type = typename VectorOp::scalar_type;
+    using vector_type = typename VectorOp::vector_type; 
     
-    using vector_operation_t   = VectorOp;
-    using laplace_operator_t   = LaplaceOp;
-    using preconditioner_t     = Precond;
+    using vector_operation_type   = VectorOp;
+    using laplace_operator_type   = LaplaceOp;
+    using preconditioner_type     = Precond;
     
     using vector_operation_ptr = std::shared_ptr<VectorOp>; 
     using laplace_operator_ptr = std::shared_ptr<LaplaceOp>; 
@@ -34,18 +34,18 @@ public:
                                           l_op(laplace_op), 
                                           p_op(precond) {} 
 
-    scalar_t make_step(const vector_t &rhs, vector_t &tmp, vector_t &x) // todo rm tmp 
+    scalar_type make_step(const vector_type &rhs, vector_type &tmp, vector_type &x) // todo rm tmp 
     {
         // tmp := Laplace(x) = Ax;
         l_op->apply(x, tmp);
         // tmp := Ax - b;
-        v_op->add_lin_comb(scalar_t{-1}, rhs, scalar_t{1}, tmp); 
+        v_op->add_lin_comb(scalar_type{-1}, rhs, scalar_type{1}, tmp); 
         // residual := ||tmp||_l2;
-        scalar_t residual = v_op->norm2(tmp);
+        scalar_type residual = v_op->norm2(tmp);
         // tmp := P(Ax - b);
         p_op->apply(tmp);
         // x   := x - P(Ax - b);
-        v_op->add_lin_comb(scalar_t{-1}, tmp, scalar_t{1}, x);
+        v_op->add_lin_comb(scalar_type{-1}, tmp, scalar_type{1}, x);
         
         return residual;
     }
