@@ -59,11 +59,11 @@ public:
     /// x is vector of size N_/2, f is of N_ size
     void apply(const T_vec& x, T_vec& f)const
     { 
-        /*for(ordinal_type j=0; j<N_; j++)
+        for(ordinal_type j=0; j<N_; j++)
         {
             f[j] = x[j/2];
-        }*/
-        for(ordinal_type j=0; j<N_; j++)
+        }
+        /*for(ordinal_type j=0; j<N_; j++)
         {
             if (j%2 == 0)
             {
@@ -76,7 +76,7 @@ public:
                 else
                     f[j] = T(0.5)*x[j/2] + T(0.5)*x[0];
             }
-        }
+        }*/
 
     }
 

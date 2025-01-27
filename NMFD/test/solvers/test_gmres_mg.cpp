@@ -52,7 +52,7 @@ int main(int argc, char const *args[])
     //std::size_t N_with_no_preconds = 50;
     std::shared_ptr<vec_ops_t> vec_ops;
 
-    auto get_residual = [&log, &vec_ops](auto& A, auto& x, auto &y) 
+    auto get_residual = [&log, &vec_ops](auto& A, auto& x, auto &y, auto &x_ref) 
     {
         T_vec resid;
         vec_ops->init_vector(resid);
@@ -60,6 +60,11 @@ int main(int argc, char const *args[])
         A.apply(x,resid);
         vec_ops->add_lin_comb(1,y,-1,resid);
         log.info_f("||Lx-y|| = %e", vec_ops->norm(resid) );
+        log.info_f("||y|| = %e", vec_ops->norm(y) );
+        vec_ops->assign(x_ref, resid);
+        vec_ops->add_lin_comb(1,x,-1,resid);
+        log.info_f("||x-x_ref|| = %e", vec_ops->norm(resid) );
+        log.info_f("||x_ref|| = %e", vec_ops->norm(x_ref) );
         vec_ops->stop_use_vector(resid);
         vec_ops->free_vector(resid);
     };
@@ -76,11 +81,13 @@ int main(int argc, char const *args[])
         mg_params.num_sweeps_post = 3;
         auto residual_reg = std::make_shared<residual_reg_t>(vec_ops);//, &log); //use log to see the action of the residual regularization
 
-        T_vec x,y,resid;
+        T_vec x,y,resid,x_ref;
         vec_ops->init_vector(x);
-        vec_ops->init_vector(y);        
+        vec_ops->init_vector(y);
+        vec_ops->init_vector(x_ref);        
         vec_ops->start_use_vector(x);
         vec_ops->start_use_vector(y);
+        vec_ops->start_use_vector(x_ref);
 
         log.info_f("=>elliptic with size %i", vec_ops->size() ); 
         auto lin_op_elliptic = std::make_shared<lin_op_elliptic_t>(*vec_ops); //with time step 5
@@ -89,7 +96,9 @@ int main(int argc, char const *args[])
         for(int j=0;j<N;j++)
         {
             //y[j] = std::sin(2.0*j/(N-1)*M_PIl);
-            y[j] = std::sin(2.0*j/(N)*M_PIl);
+            T s = T(j)/(N);
+            y[j] = std::sin(2.0*s*M_PIl);
+            x_ref[j] = std::sin(2.0*s*M_PIl)/(2.0*M_PIl)/(2.0*M_PIl);
         }
 
         gmres_elliptic_w_reg_t::params params_elliptic;
@@ -115,7 +124,7 @@ int main(int argc, char const *args[])
             error += (!res);
             log.info_f("pLgmres res with x0: %s", res?"true":"false");
             log.info_f("solution final norm = %e", vec_ops->norm(x) );
-            get_residual(*lin_op_elliptic, x, y);
+            get_residual(*lin_op_elliptic, x, y, x_ref);
         }
         {
             auto mg = std::make_shared<mg_t>(mg_utils, mg_params);
@@ -133,13 +142,15 @@ int main(int argc, char const *args[])
             error += (!res);
             log.info_f("pRgmres res with x0: %s", res?"true":"false");
             log.info_f("solution final norm = %e", vec_ops->norm(x) );
-            get_residual(*lin_op_elliptic, x, y);
+            get_residual(*lin_op_elliptic, x, y, x_ref);
         }
         
         vec_ops->stop_use_vector(x);
         vec_ops->stop_use_vector(y);
+        vec_ops->stop_use_vector(x_ref);
         vec_ops->free_vector(x);
         vec_ops->free_vector(y);
+        vec_ops->free_vector(x_ref);
     }
 
  
