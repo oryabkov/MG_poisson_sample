@@ -77,6 +77,36 @@ class OperatorName
 public:
     using scalar_type = ...;
     using vector_type = ...;
+public:
+    void apply(const vector_type &in, vector_type &out);
+};
+```
+
+In Operator there is a garantee that initial value of out doesnot affects result.
+
+## InplaceOperator 
+
+```
+class InplaceOperatorName
+{
+public:
+    using scalar_type = ...;
+    using vector_type = ...;
+public:
+    void apply(vector_type &in_out);
+};
+```
+
+in_out is both input and output.
+
+## OperatorWithSpaces
+
+```
+class OperatorWithSpacesName
+{
+public:
+    using scalar_type = ...;
+    using vector_type = ...;
     using vector_space_type = ...; /// VectorSpace
 public:
     void apply(const vector_type &in, vector_type &out);
@@ -87,10 +117,10 @@ public:
 
 In Operator there is a garantee that initial value of out doesnot affects result.
 
-## InplaceOperator 
+## InplaceOperatorWithSpaces 
 
 ```
-class InplaceOperatorName
+class InplaceOperatorWithSpacesName
 {
 public:
     using scalar_type = ...;
@@ -115,6 +145,7 @@ class PreconditionerName
 public:
     using scalar_type = ...;
     using vector_type = ...;
+    using operator_type = ...;
     using vector_space_type = ...; /// VectorSpace
 public:
     void set_operator(std::shared_ptr<const operator_type> operator);
@@ -141,6 +172,10 @@ public:
 
 In Solver there is no strict garantee that initial value of res doesnot affects result. For example Solver can use it initial guess.
 
+## PreconditionerWithSpaces, SolverWithSpaces
+
+TODO seems not be often used though
+
 ## Coarsening
 
 Creates Restrictor,Prolongator and SystemOperator for next level based on previous SystemOperator.
@@ -153,19 +188,40 @@ public:
     using restrictor_type = ...;
     using prolongator_type = ...;
 public:
-    std::tuple<std::shared_ptr<restrictor_type>,std::shared_ptr<prolongator_type>> next_level(const operator_type &operator);
-    std::shared_ptr<operator_type> coarse_operator(const operator_type &operator, const restrictor_type &restrictor, const prolongator_type &prolongator);
+    std::tuple<std::shared_ptr<restrictor_type>,std::shared_ptr<prolongator_type>> next_level(const operator_type &op);
+    std::shared_ptr<operator_type> coarse_operator(const operator_type &op, const restrictor_type &restrictor, const prolongator_type &prolongator);
+    bool coarse_enough(const operator_type &op)const;
 };
 ```
 
 This structure is almost like in amgcl.
-Rationale: why do we need two methods? because of possible rebuild procedure where only operators are updated.
+Rationale: why do we need two methods for level creation? because of possible rebuild procedure where only operators are updated.
 
 TODO
 
 ## HierarchicAlgorithm
 
 Used for automized nested algorithms construction.
+
+```
+class HierarchicAlgorithmName
+{
+public:
+    struct params
+    {
+        params(const std::string &log_prefix = "", const std::string &log_name = "HierarchicAlgorithmName::")
+        {
+        }
+    };
+    using params_hierarchy = params;
+    struct utils
+    {
+    };
+    using utils_hierarchy = utils;
+
+    HierarchicAlgorithmName(const utils_hierarchy &u, const params_hierarchy &p)
+};
+```
 
 TODO
 
@@ -174,9 +230,11 @@ TODO
 mg is Preconditioner.
 
 ```
-/// SystemOperator, Restrictor, Prolongator are Operator.
+/// SystemOperator is OperatorWithSpaces.
+/// Restrictor, Prolongator are Operator.
 /// Smoother, CoarseSolver are Preconditioner
 /// Coarsening is Coarsening
+/// Smoother, CoarseSolver, Coarsening are HierarchicAlgorithm
 /// All vector_space_type, vector_type, scalar_type are the same
 template
 <
@@ -189,7 +247,6 @@ template
 >
 class mg
 {
-    //TODO
 };
 ```
 

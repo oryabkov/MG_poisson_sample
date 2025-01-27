@@ -23,27 +23,31 @@ namespace tests
 {
 
 
-template<class VectorOperations, class Log> 
+template<class VectorSpace, class Log> 
 class linear_operator_elliptic
 {
 public:    
-    using scalar_type = typename VectorOperations::scalar_type;
-    using vector_type = typename VectorOperations::vector_type;
-    using Ord = typename VectorOperations::ordinal_type;
+    using scalar_type = typename VectorSpace::scalar_type;
+    using vector_type = typename VectorSpace::vector_type;
+    using vector_space_type = VectorSpace;
+    using Ord = typename VectorSpace::ordinal_type;
 private:
     using T = scalar_type;
     using T_vec = vector_type;
-    const VectorOperations& vec_ops_;
-    Ord N;
+    //const VectorSpace& vec_ops_;
+    Ord N_;
     T h_;
 
 public:
 
-    linear_operator_elliptic(const VectorOperations& vec_ops):
-    vec_ops_(vec_ops)
+    linear_operator_elliptic(Ord N):
+        N_(N)
     {
-        N = vec_ops_.size();
         h_ = 1.0/static_cast<T>(N);
+    }
+    linear_operator_elliptic(const VectorSpace& vec_ops) :
+        linear_operator_elliptic(vec_ops.size())
+    {
     }
     ~linear_operator_elliptic()
     {}
@@ -54,22 +58,31 @@ public:
     }
     Ord get_size() const
     {
-        return N;
+        return N_;
     }
     T get_h() const
     {
         return h_;
     }
+
+    std::shared_ptr<vector_space_type> get_dom_space()const
+    {
+        return std::make_shared<vector_space_type>(N_);
+    }
+    std::shared_ptr<vector_space_type> get_im_space()const
+    {
+        return std::make_shared<vector_space_type>(N_);
+    }
     void apply(const T_vec& x, T_vec& f)const
     { 
-        for(Ord j=0; j<N; j++)
+        for(Ord j=0; j<N_; j++)
         {
-            if((j>0)&&(j<N-1))
+            if((j>0)&&(j<N_-1))
                 f[j] = (2/h_/h_)*x[j] - (1/h_/h_)*x[j-1] - (1/h_/h_)*x[j+1];
             else if(j==0)
-                f[j] = (2/h_/h_)*x[0] - (1/h_/h_)*x[N-1] - (1/h_/h_)*x[1];
-            else if(j==N-1)
-                f[j] = (2/h_/h_)*x[N-1] - (1/h_/h_)*x[N-2] - (1/h_/h_)*x[0];
+                f[j] = (2/h_/h_)*x[0] - (1/h_/h_)*x[N_-1] - (1/h_/h_)*x[1];
+            else if(j==N_-1)
+                f[j] = (2/h_/h_)*x[N_-1] - (1/h_/h_)*x[N_-2] - (1/h_/h_)*x[0];
         }
 
     }

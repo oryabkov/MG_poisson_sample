@@ -53,6 +53,19 @@ struct vector_wrap
         free();
     }
 
+    vector_wrap(const vector_wrap&) = delete;
+    vector_wrap &operator=(const vector_wrap&) = delete;
+    vector_wrap(vector_wrap&&w) : space_(w.space_), v_(std::move(w.v_)), is_inited_(w.is_inited_), is_using_(w.is_using_)
+    {
+        w.is_inited_ = false;
+        w.is_using_ = false;
+    }
+    ///TODO implement but dont forget to free this vector
+    vector_wrap &operator=(vector_wrap&&w) = delete;
+    /*{
+
+    }*/
+
     vector_type         &operator*() { return v_; }
     const vector_type   &operator*()const { return v_; }
 
