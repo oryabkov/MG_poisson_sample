@@ -6,4 +6,7 @@ INCLUDE_SCFD=-I$(SCFD_INCLUDE_DIR)
 COMPILE_FLAGS=-O3 $(INCLUDE_SCFD) $(CFLAGS)
 
 test_hip.bin: $(HEADERS) $(SOURCE) test.cpp
-	hipcc $(COMPILE_FLAGS) $(INCLUDE_SCFD) $(INCLUDE_DIRS) -DPOISSON_SOLVER_HIP $(SOURCE) test.cpp -o test.bin
+	hipcc $(COMPILE_FLAGS) $(INCLUDE_SCFD) $(INCLUDE_DIRS) -DHIP_BACKEND $(SOURCE) test.cpp -o test_hip.bin
+
+test_omp.bin: $(HEADERS) $(SOURCE) test.cpp
+	g++ $(COMPILE_FLAGS) -fopenmp $(INCLUDE_SCFD) $(INCLUDE_DIRS) -DOMP_BACKEND $(SOURCE) test.cpp -o test_omp.bin

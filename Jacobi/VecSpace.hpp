@@ -1,6 +1,8 @@
 #ifndef __VECTOR_SPACE_HPP__
 #define __VECTOR_SPACE_HPP__
 
+#include <cmath>
+
 #include "VecSpaceKernel.hpp"
 #include "VecOpBase.hpp"
 

@@ -1,6 +1,8 @@
 #ifndef __INCLUDE_HPP__
 #define __INCLUDE_HPP__
 
+static constexpr int current_dim = 3;
+
 template <int Dim>
 struct boundary_cond
 {
