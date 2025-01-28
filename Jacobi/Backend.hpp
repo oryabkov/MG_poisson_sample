@@ -29,7 +29,7 @@ struct backend
     using reduce_type      = scfd::omp_reduce<>;
 };
 
-#elif
+#elif defined(CUDA_BACKEND)
 
 #include <scfd/memory/cuda.h>
 #include <scfd/for_each/cuda_nd_impl.cuh>
@@ -37,7 +37,7 @@ struct backend
 
 struct backend
 {
-    using memory_type      = scfd::memory::hip_device;
+    using memory_type      = scfd::memory::cuda_device;
     using for_each_nd_type = scfd::for_each::cuda_nd<current_dim>;
     using reduce_type      = scfd::thrust_reduce<>;
 };

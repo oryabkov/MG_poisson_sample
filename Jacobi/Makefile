@@ -10,3 +10,6 @@ test_hip.bin: $(HEADERS) $(SOURCE) test.cpp
 
 test_omp.bin: $(HEADERS) $(SOURCE) test.cpp
 	g++ $(COMPILE_FLAGS) -fopenmp $(INCLUDE_SCFD) $(INCLUDE_DIRS) -DOMP_BACKEND $(SOURCE) test.cpp -o test_omp.bin
+
+test_cuda.bin: $(HEADERS) $(SOURCE) test.cu
+	nvcc $(COMPILE_FLAGS) $(INCLUDE_SCFD) $(INCLUDE_DIRS) -DCUDA_BACKEND $(SOURCE) test.cu -o test_cuda.bin
