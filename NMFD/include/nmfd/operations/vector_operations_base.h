@@ -76,11 +76,11 @@ public:
 
     virtual ~vector_operations_base() = default;
 
-    void set_high_precision() const
+    void set_high_precision()
     {
         use_high_precision_ = true;
     }
-    void set_regular_precision() const
+    void set_regular_precision()
     {
         use_high_precision_ = false;
     }
