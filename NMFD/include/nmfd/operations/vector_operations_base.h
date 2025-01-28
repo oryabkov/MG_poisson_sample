@@ -90,7 +90,7 @@ public:
         return sz_;
     }*/
     
-    [[nodiscard]] virtual vector_type at(multivector_type& x, Ord m, Ord k_) = 0;
+    [[nodiscard]] virtual vector_type at(multivector_type& x, Ord m, Ord k_) const = 0;
 
     [[nodiscard]] virtual bool is_valid_number(const vector_type &x) const = 0;
     //reduction operations:

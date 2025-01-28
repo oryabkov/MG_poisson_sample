@@ -12,7 +12,7 @@ struct restrict
 {
     VectorType dom, img;
     
-    __DEVICE_TAG__ void operator()(const IdxND idx) // traversing image space
+    __DEVICE_TAG__ void operator()(const IdxND idx) const // traversing image space
     {
         using Rect   = typename scfd::static_vec::rect<Ord, IdxND::dim>;
         using Scalar = typename VectorType::scalar_type;
@@ -24,7 +24,8 @@ struct restrict
         
         Rect r{begin, end};
         Scalar sum{0};
-
+    
+        #pragma unroll
         for(IdxND i = r._bypass_start(); r.is_own(i); r._bypass_step(i))
         {
             sum += dom(i);

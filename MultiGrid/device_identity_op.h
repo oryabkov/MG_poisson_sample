@@ -1,15 +1,15 @@
-#ifndef __DEVICE_PROLONGATOR_H__
-#define __DEVICE_PROLONGATOR_H__
+#ifndef __DEVICE_IDENTITY_H__
+#define __DEVICE_IDENTITY_H__
 
 #include <memory>
 
-#include "kernels/prolongate.h"
+#include "kernels/identity.h"
 
-namespace tests 
+namespace tests
 {
 
 template <class VectorSpace, class Log>
-class device_prolongator
+class device_identity_op
 {
 public:
     using scalar_type        = typename VectorSpace::scalar_type;
@@ -24,41 +24,30 @@ public:
     using for_each_nd_type   = typename VectorSpace::for_each_nd_type;
 
 public: // Especially for SYCL
-    using prolongator_kernel = kernels::prolongate
-    <
-        idx_nd_type, ordinal_type, vector_type
-    >;
+    using identity_kernel = kernels::identity<idx_nd_type, vector_type>;
 private:
-    idx_nd_type      range; // in im space
+    idx_nd_type      range;
 public:
-    device_prolongator(idx_nd_type r) : range(r) // in im space 
-    {
-        for (int i=0; i<idx_nd_type::dim; ++i)
-        {
-            if (r[i] % 2u != 0)
-                throw std::logic_error("nmfd::prolongator: encountered odd value in vector_space range! not supported case");
-        }
-    }
+    device_identity_op(idx_nd_type r = {}): range(r) {}
 
     idx_nd_type get_size() const noexcept { return range; }
-    
+
     std::shared_ptr<vector_space_type> get_dom_space() const
     {
-        return std::make_shared<vector_space_type>(range / Ord{2u});
+        return std::make_shared<vector_space_type>(range);
     }
     std::shared_ptr<vector_space_type> get_im_space() const
     {
         return std::make_shared<vector_space_type>(range);
     }
-    
-    // domain -> (prolongate) -> image
+
     void apply(vector_type &from, vector_type &to) const
     {
-       for_each_nd_type for_each_nd_inst;
-       for_each_nd_inst(prolongator_kernel{from, to, range}, range);
+        for_each_nd_type for_each_nd_inst;
+        for_each_nd_inst(identity_kernel{from, to, range}, range);
     };
 };
 
-}// namespace tests
+}// namespace tests 
 
 #endif

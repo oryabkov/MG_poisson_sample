@@ -1,6 +1,8 @@
 #ifndef __DEVICE_RESTRICTOR_H__
 #define __DEVICE_RESTRICTOR_H__
 
+#include <memory>
+
 #include "kernels/restrict.h"
 
 namespace tests
@@ -40,11 +42,11 @@ public:
 
     idx_nd_type get_size() const noexcept { return range; }
 
-    std::shared_ptr<vector_space_type> get_dom_space()const
+    std::shared_ptr<vector_space_type> get_dom_space() const
     {
         return std::make_shared<vector_space_type>(range / Ord{2u});
     }
-    std::shared_ptr<vector_space_type> get_im_space()const
+    std::shared_ptr<vector_space_type> get_im_space() const
     {
         return std::make_shared<vector_space_type>(range);
     }

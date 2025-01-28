@@ -217,7 +217,7 @@ public:
     void stop_use_multivector(multivector_type& x, Ord m) const
     {}
     
-    [[nodiscard]] vector_type at(multivector_type& x, Ord m, Ord k_)
+    [[nodiscard]] vector_type at(multivector_type& x, Ord m, Ord k_) const
     {
         if (k_ < 0 || k_>=m  ) 
         {
