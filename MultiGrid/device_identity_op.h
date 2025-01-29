@@ -28,8 +28,15 @@ public: // Especially for SYCL
 private:
     idx_nd_type      range;
 public:
+    struct params {};
+    using params_hierarchy = params;
+    struct utils {};
+    using utils_hierarchy = utils;
+
+    device_identity_op(const utils_hierarchy &u, const params_hierarchy &p) {}
     device_identity_op(idx_nd_type r = {}): range(r) {}
 
+public:
     idx_nd_type get_size() const noexcept { return range; }
 
     void set_operator(std::shared_ptr<const lin_op_t> op)

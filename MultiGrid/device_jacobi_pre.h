@@ -42,6 +42,17 @@ private:
     boundary_cond_type   b_cond;
 
 public:
+    struct params
+    {
+        params(const std::string &log_prefix = "", 
+               const std::string &log_name = "smoother_elliptic::") {}
+    };
+    using params_hierarchy = params;
+    struct utils {};
+    using utils_hierarchy = utils;
+
+    device_jacobi_pre(const utils_hierarchy &u, const params_hierarchy &p) {}
+
     device_jacobi_pre(vector_space_ptr   vec_space, 
                       grid_step_type     grid_step,
                       boundary_cond_type cond) :
@@ -58,7 +69,8 @@ public:
         step   = op->get_h();
         b_cond = op->get_b_cond();
     }
-    
+
+public:    
     vector_space_ptr        get_space()  const
     {
         return std::make_shared<vector_space_type>(range);

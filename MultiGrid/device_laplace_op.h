@@ -50,7 +50,7 @@ public:
         grid_step_type grid_step, boundary_cond_type cond) :
                 device_laplace_op(vec_space.get_size(), grid_step, cond) {} 
     
-        vector_space_ptr        get_space()  const 
+    vector_space_ptr        get_space()  const 
     {
         return std::make_shared<vector_space_type>(range);
     }
