@@ -3,12 +3,14 @@ PROJECT_ROOT_PATH = ..
 SCFD_INCLUDE = $(PROJECT_ROOT_PATH)/SCFD/include
 NMFD_INCLUDE = $(PROJECT_ROOT_PATH)/NMFD/include
 
-INCLUDE_CONTRIB = -I$(SCFD_INCLUDE) -I$(NMFD_INCLUDE)
-HOSTFLAGS = $(TARGET_GCC) -std=c++17
-HOSTCOMPILER = hipcc
-#IPROJECT = ${INCLUDE_CONTRIB}
-#LPROJECT = -ldl
+INCLUDE   = -I$(SCFD_INCLUDE) -I$(NMFD_INCLUDE)
+HOSTFLAGS = -O3 $(CFLAGS)
+
+######################## VECTOR SPACE TESTS ##################################
+test_vec_space_hip.bin: test_vec_space.cpp
+	hipcc $(HOSTFLAGS) $(INCLUDE) -DHIP_BACKEND test_vec_space.cpp -o test_vec_space_hip.bin
 
 
-test_gmres_mg.bin: test_mg.cpp
-	$(HOSTCOMPILER) $(HOSTFLAGS) $(INCLUDE_ROOT) $(INCLUDE_LOCAL) $(INCLUDE_CONTRIB) test_mg.cpp -o test_mg.bin
+######################### MULTIGRID TESTS ####################################
+test_mg_hip.bin: test_mg.cpp
+	hipcc $(HOSTFLAGS) $(INCLUDE) -DHIP_BACKEND test_mg.cpp -o test_mg_hip.bin

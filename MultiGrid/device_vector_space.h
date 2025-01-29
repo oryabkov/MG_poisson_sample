@@ -1,9 +1,9 @@
 #ifndef __DEVICE_VECTOR_SPACE_H__
 #define __DEVICE_VECTOR_SPACE_H__
 
+#include <algorithm>
 #include <cmath>
 #include <vector>
-
 
 #include <nmfd/operations/vector_operations_base.h>
 #include <scfd/arrays/array_nd.h>
@@ -67,8 +67,30 @@ public:
 
     idx_nd_type get_range() const noexcept { return range; }
 
+public:
+    void init_vector(vector_type& x) const { x.init(range); }
+    void free_vector(vector_type& x) const { x.free();      }
    
-    [[nodiscard]] vector_type at(multivector_type& x, Ordinal m, Ordinal k_) const override
+    void start_use_vector(vector_type& x) const {}
+    void  stop_use_vector(vector_type& x) const {}
+    
+    void init_multivector(multivector_type& x, ordinal_type m) const
+    {
+        x.clear();
+        x.reserve(m);
+        for(int i=0; i<m; ++i) { x.emplace_back(range); }
+    }
+    void free_multivector(multivector_type& x, ordinal_type m) const
+    {
+        std::for_each_n(begin(x), m, [](vector_type& v){ v.free(); });
+    }
+    
+    void start_use_multivector(multivector_type& x, ordinal_type m) const {}
+    void  stop_use_multivector(multivector_type& x, ordinal_type m) const {}
+
+
+public: // Implementing Vector_Operations interface
+    [[nodiscard]] vector_type at(multivector_type& x, ordinal_type m, ordinal_type k_) const override
     {
         if ( k_ < 0 || k_>=m  )
             throw std::out_of_range("device_vector_space: multivector.at");
