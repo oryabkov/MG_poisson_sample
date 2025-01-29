@@ -2,8 +2,6 @@
 #include <iostream>
 #include <memory>
 
-#include <scfd/arrays/array_nd.h>
-
 #include "Include.hpp"
 #include "VecSpace.hpp"
 #include "LaplaceOp.hpp"

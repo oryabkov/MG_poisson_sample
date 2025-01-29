@@ -26,7 +26,7 @@ public:
 public: // Especially for SYCL
     using restrictor_kernel = kernels::restrict
     <
-        idx_nd_type, scalar_type, vector_type
+        idx_nd_type, ordinal_type, vector_type
     >;
 private:
     idx_nd_type      range; // in dom space
@@ -56,7 +56,7 @@ public:
     {
         auto half_r = range / Ord{2u};
         for_each_nd_type for_each_nd_inst;
-        for_each_nd_inst(restrictor_kernel{from, to, half_r}, half_r);
+        for_each_nd_inst(restrictor_kernel{from, to}, half_r);
     };
 };
 

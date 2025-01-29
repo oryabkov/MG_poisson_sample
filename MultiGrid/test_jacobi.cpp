@@ -62,8 +62,8 @@ int main()
     vector_t x(range), y(range), rhs(range), res(range);
 
     auto vspace  = std::make_shared<vector_space>(range);
-    auto l_op    = std::make_shared<laplace_operator>(vspace, step, cond);
-    auto precond = std::make_shared<preconditioner>  (vspace, step, cond);
+    auto l_op    = std::make_shared<laplace_operator>(range, step, cond);
+    auto precond = std::make_shared<preconditioner>(l_op);
 
     jacobi_solver solver{vspace, l_op, precond};
 

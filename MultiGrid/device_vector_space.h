@@ -64,9 +64,9 @@ private:
 public:
     device_vector_space(idx_nd_type const r, bool use_high_precision = false): 
         parent_t(use_high_precision), range(r), sz(r.components_prod()), helper(range) {};
-
-    idx_nd_type get_range() const noexcept { return range; }
-
+    //sz is total size meanwhile range is vector space size
+    idx_nd_type get_size() const noexcept { return range; }
+    idx_nd_type size()     const noexcept { return range; }
 public:
     void init_vector(vector_type& x) const { x.init(range); }
     void free_vector(vector_type& x) const { x.free();      }

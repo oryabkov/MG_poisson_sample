@@ -57,6 +57,17 @@ int main(int argc, char const *args[])
     >;
     using mg_params_t = mg_t::params_hierarchy;
     using mg_utils_t = mg_t::utils_hierarchy;
-    
+
+
+    mg_utils_t    mg_utils;
+    mg_params_t   mg_params;
+     
+    mg_utils.log               = &log; 
+    mg_params.direct_coarse    = false;
+    mg_params.num_sweeps_pre   = 3;
+    mg_params.num_sweeps_post  = 3;
+
+    mg_t mg(mg_utils, mg_params);
+
     return error;
 }

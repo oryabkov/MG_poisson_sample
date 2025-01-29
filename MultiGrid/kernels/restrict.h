@@ -15,12 +15,12 @@ struct restrict
     __DEVICE_TAG__ void operator()(const IdxND idx) const // traversing image space
     {
         using Rect   = typename scfd::static_vec::rect<Ord, IdxND::dim>;
-        using Scalar = typename VectorType::scalar_type;
+        using Scalar = typename VectorType::value_type;
         
         const Ord num_cells = Ord{1} << IdxND::dim;
         
-        const IdxND begin   = Ord{2} * (idx + IdxND::make_zeros());
-        const IdxND end     = Ord{2} * (idx + IdxND::make_ones() );
+        const IdxND begin   = Ord{2} * (idx + IdxND::make_zero());
+        const IdxND end     = Ord{2} * (idx + IdxND::make_ones());
         
         Rect r{begin, end};
         Scalar sum{0};

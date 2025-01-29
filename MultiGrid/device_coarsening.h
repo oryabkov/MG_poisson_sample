@@ -20,6 +20,7 @@ public:
 
     using ordinal_type = typename vector_space_type::ordinal_type;
     using idx_nd_type  = typename vector_space_type::idx_nd_type;
+    using scalar_type  = typename vector_space_type::scalar_type;
 public:
     struct params
     {
@@ -54,8 +55,14 @@ public:
                     const restrictor_type  &restrictor, 
                     const prolongator_type &prolongator)
     {
-        using  Ord = ordinal_type;
-        return std::make_shared<operator_type>(op.get_size() / Ord{2u});
+        using Ord    = ordinal_type;
+        using Scalar = scalar_type;
+        return std::make_shared<operator_type>
+        (
+            op.get_size() / Ord   {2},
+            op.get_h()    * Scalar{2},
+            op.get_b_cond() 
+        );
     }
 
     bool coarse_enough(const operator_type &op)const
