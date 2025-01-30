@@ -1,59 +1,4 @@
-#include <memory>
-#include <cmath>
-#include <scfd/utils/log.h>
-#include <nmfd/preconditioners/mg.h>
-#include <nmfd/solvers/monitor_krylov.h>
-#include <nmfd/solvers/gmres.h>
-
-#include "device_vector_space.h"
-#include "device_restrictor.h"
-#include "device_prolongator.h"
-#include "device_identity_op.h"
-#include "device_laplace_op.h"
-#include "device_jacobi_pre.h"
-#include "device_coarsening.h"
-
-#include "include/boundary.h"
-#include "solvers/jacobi.h" //TODO move to nmfd
-
-constexpr int dim =     3;
-using scalar      = float;
-using grid_step_type   = scfd::static_vec::vec<scalar, dim>;
-using idx_nd_type      = scfd::static_vec::vec<int   , dim>;
-
-/***********************/
-#include <scfd/memory/hip.h>
-#include <scfd/for_each/hip_nd_impl.h>
-#include <scfd/reduce/thrust.h>
-
-struct backend
-{
-    using memory_type      = scfd::memory::hip_device;
-    using for_each_nd_type = scfd::for_each::hip_nd<dim>;
-    using reduce_type      = scfd::thrust_reduce<>;
-};
-/***********************/
-
-using log_t = scfd::utils::log_std;
-    
-using vec_ops_t     = nmfd::device_vector_space<scalar, dim, backend>;
-
-using prolongator_t = tests::device_prolongator<vec_ops_t, log_t>;
-using restrictor_t  = tests::device_restrictor <vec_ops_t, log_t>;
-using ident_op_t    = tests::device_identity_op<vec_ops_t, log_t>;
-using lin_op_t      = tests::device_laplace_op <vec_ops_t, log_t>;
-using smoother_t    = tests::device_jacobi_pre <vec_ops_t, log_t>;
-using coarsening_t  = tests::device_coarsening<lin_op_t, log_t>;
-using mg_t = nmfd::preconditioners::mg
-<
-    lin_op_t, restrictor_t, prolongator_t,
-    smoother_t, ident_op_t, coarsening_t,
-    log_t
->;
-using jacobi_solver    = jacobi<vec_ops_t, lin_op_t, mg_t>;
-
-using vector_t         = typename vec_ops_t::vector_type;
-using vector_view_t    = typename vector_t::view_type;
+#include "types.h"
 
 auto const f = [](const scalar x, const scalar y, const scalar z) noexcept
 {
@@ -117,7 +62,7 @@ int main(int argc, char const *args[])
         res_view.release();
     }
 
-    jacobi_solver solver(vspace, l_op, mg);
+    jacobi_mg_solver solver(vspace, l_op, mg);
     
     for (std::size_t i=0; i < 40; ++i)
     {

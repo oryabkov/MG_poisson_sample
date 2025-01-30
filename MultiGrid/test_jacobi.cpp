@@ -1,45 +1,4 @@
-#include <utility>
-#include <iostream>
-
-#include <scfd/utils/log.h>
-
-#include "include/boundary.h"
-#include "solvers/jacobi.h" //TODO move to nmfd
-
-#include "device_vector_space.h"
-#include "device_laplace_op.h"
-#include "device_jacobi_pre.h"
-
-constexpr int dim =      3;
-using scalar      = double;
-using grid_step_type   = scfd::static_vec::vec<scalar, dim>;
-using idx_nd_type      = scfd::static_vec::vec<int   , dim>;
-
-/*******************************************************/
-#include <scfd/memory/hip.h>
-#include <scfd/for_each/hip_nd_impl.h>
-#include <scfd/reduce/thrust.h>
-
-struct backend
-{
-    using memory_type      = scfd::memory::hip_device;
-    using for_each_nd_type = scfd::for_each::hip_nd<dim>;
-    using reduce_type      = scfd::thrust_reduce<>;
-};
-/*******************************************************/
-
-
-using log_t = scfd::utils::log_std;
-using vector_space = nmfd::device_vector_space<scalar,/*dim=*/3, backend>;
-
-using laplace_operator = tests::device_laplace_op<vector_space, log_t>;
-using preconditioner   = tests::device_jacobi_pre<vector_space, log_t>;
-
-using jacobi_solver    = jacobi<vector_space, laplace_operator, preconditioner>;
-
-using vector_t         = typename vector_space::vector_type;
-using vector_view_t    = typename vector_t::view_type; 
-
+#include "types.h"
 
 auto const f = [](const scalar x, const scalar y, const scalar z) noexcept
 {
@@ -61,9 +20,9 @@ int main()
 
     vector_t x(range), y(range), rhs(range), res(range);
 
-    auto vspace  = std::make_shared<vector_space>(range);
-    auto l_op    = std::make_shared<laplace_operator>(range, step, cond);
-    auto precond = std::make_shared<preconditioner>(l_op);
+    auto vspace  = std::make_shared<vec_ops_t>(range);
+    auto l_op    = std::make_shared<lin_op_t>(range, step, cond);
+    auto precond = std::make_shared<smoother_t>(l_op);
 
     jacobi_solver solver{vspace, l_op, precond};
 
