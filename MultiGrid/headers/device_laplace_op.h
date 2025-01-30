@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "boundary.h" // for boundary conditions
+#include "include/boundary.h" // for boundary conditions
 #include "kernels/laplace.h"
 
 namespace tests 

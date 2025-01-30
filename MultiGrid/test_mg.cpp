@@ -13,10 +13,11 @@
 #include "device_jacobi_pre.h"
 #include "device_coarsening.h"
 
-#include "jacobi.h"
+#include "include/boundary.h"
+#include "solvers/jacobi.h" //TODO move to nmfd
 
 constexpr int dim =     3;
-using scalar      = double;
+using scalar      = float;
 using grid_step_type   = scfd::static_vec::vec<scalar, dim>;
 using idx_nd_type      = scfd::static_vec::vec<int   , dim>;
 
@@ -77,8 +78,8 @@ int main(int argc, char const *args[])
     using mg_utils_t = mg_t::utils_hierarchy;
 
     
-    auto range = idx_nd_type   ::make_ones() * 128;
-    auto step  = grid_step_type::make_ones() / 128.;
+    auto range = idx_nd_type   ::make_ones() * 512;
+    auto step  = grid_step_type::make_ones() / 512.;
     auto cond  = boundary_cond<dim>{{-1, -1, -1}, {-1, -1, -1}}; // TODO deduce?
 
     auto vspace  = std::make_shared<vec_ops_t>(range);
@@ -118,7 +119,7 @@ int main(int argc, char const *args[])
 
     jacobi_solver solver(vspace, l_op, mg);
     
-        for (std::size_t i=0; i < 3000; ++i)
+    for (std::size_t i=0; i < 40; ++i)
     {
         std::cout << "residual_i = "
                   << solver.make_step(rhs, tmp, x) << std::endl;

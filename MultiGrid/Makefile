@@ -1,9 +1,10 @@
 PROJECT_ROOT_PATH = ..
 
+HEADERS=./headers
 SCFD_INCLUDE = $(PROJECT_ROOT_PATH)/SCFD/include
 NMFD_INCLUDE = $(PROJECT_ROOT_PATH)/NMFD/include
 
-INCLUDE   = -I$(SCFD_INCLUDE) -I$(NMFD_INCLUDE)
+INCLUDE   = -I$(SCFD_INCLUDE) -I$(NMFD_INCLUDE) -I$(HEADERS)
 HOSTFLAGS = -O3 $(CFLAGS)
 
 ######################## VECTOR SPACE TESTS ##################################

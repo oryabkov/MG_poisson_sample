@@ -3,15 +3,15 @@
 
 #include <scfd/utils/log.h>
 
-#include "boundary.h"
-#include "jacobi.h"
+#include "include/boundary.h"
+#include "solvers/jacobi.h" //TODO move to nmfd
 
 #include "device_vector_space.h"
 #include "device_laplace_op.h"
 #include "device_jacobi_pre.h"
 
 constexpr int dim =      3;
-using scalar      = float;
+using scalar      = double;
 using grid_step_type   = scfd::static_vec::vec<scalar, dim>;
 using idx_nd_type      = scfd::static_vec::vec<int   , dim>;
 
@@ -55,8 +55,8 @@ auto const u = [](const scalar x, const scalar y, const scalar z) noexcept
 
 int main()
 {
-    auto range = 100  * idx_nd_type   ::make_ones();
-    auto step  = 0.01f * grid_step_type::make_ones();
+    auto range = idx_nd_type   ::make_ones() * 512;
+    auto step  = grid_step_type::make_ones() / 512.;
     auto cond  = boundary_cond<dim>{{-1, -1, -1}, {-1, -1, -1}}; // TODO deduce?
 
     vector_t x(range), y(range), rhs(range), res(range);
@@ -89,7 +89,7 @@ int main()
 
     auto & tmp = y;                 //y is now temporary storage
 
-    for (std::size_t i=0; i < 30000; ++i)
+    for (std::size_t i=0; i < 60000; ++i)
     {
         std::cout << "residual_i = "
                   << solver.make_step(rhs, tmp, x) << std::endl;
