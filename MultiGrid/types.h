@@ -1,5 +1,3 @@
-#include <memory>
-#include <cmath>
 #include <scfd/utils/log.h>
 #include <nmfd/preconditioners/mg.h>
 #include <nmfd/solvers/monitor_krylov.h>
