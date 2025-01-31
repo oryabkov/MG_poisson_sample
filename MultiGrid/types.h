@@ -1,3 +1,6 @@
+#ifndef __TYPES_H__
+#define __TYPES_H__
+
 #include <scfd/utils/log.h>
 #include <nmfd/preconditioners/mg.h>
 #include <nmfd/solvers/monitor_krylov.h>
@@ -21,8 +24,9 @@ using grid_step_type   = scfd::static_vec::vec<scalar, dim>;
 using idx_nd_type      = scfd::static_vec::vec<int   , dim>;
 
 using log_t = scfd::utils::log_std;
-    
 using vec_ops_t     = nmfd::device_vector_space<scalar, dim, backend>;
+
+using monitor_t = nmfd::solvers::monitor_krylov<vec_ops_t, log_t>;
 
 using prolongator_t = tests::device_prolongator<vec_ops_t, log_t>;
 using restrictor_t  = tests::device_restrictor <vec_ops_t, log_t>;
@@ -40,14 +44,11 @@ using mg_t = nmfd::preconditioners::mg
     log_t
 >;
 using mg_params_t = mg_t::params_hierarchy;
-using mg_utils_t = mg_t::utils_hierarchy;
+using mg_utils_t  = mg_t::utils_hierarchy;
 
-using jacobi_solver    = jacobi<vec_ops_t, lin_op_t, smoother_t>;
-using jacobi_mg_solver = jacobi<vec_ops_t, lin_op_t, mg_t>;
 
-using monitor_t = nmfd::solvers::monitor_krylov<vec_ops_t, log_t>;
-using gmres_solver = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_t, precond_interface>;
-
+using jacobi_solver    = jacobi<vec_ops_t, lin_op_t, precond_interface>;
+using gmres_solver     = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_t, precond_interface>;
 
 using vector_t         = typename vec_ops_t::vector_type;
 using vector_view_t    = typename vector_t::view_type;
@@ -75,4 +76,6 @@ MAKE_SYCL_DEVICE_COPYABLE(lin_op_t::laplace_op_kernel);
 
 MAKE_SYCL_DEVICE_COPYABLE(smoother_t::preconditioner_kernel);
    
+#endif
+
 #endif

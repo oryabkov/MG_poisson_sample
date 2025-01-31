@@ -32,7 +32,7 @@ public:
     jacobi(vector_operation_ptr vec_op, laplace_operator_ptr laplace_op, 
             preconditioner_ptr precond) : v_op(vec_op), 
                                           l_op(laplace_op), 
-                                          p_op(precond) {} 
+                                          p_op(precond) { p_op->set_operator(l_op); } 
 
     scalar_type make_step(const vector_type &rhs, vector_type &tmp, vector_type &x) 
     {

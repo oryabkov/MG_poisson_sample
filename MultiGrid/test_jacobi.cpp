@@ -22,19 +22,22 @@ auto const u = [](const scalar x, const scalar y, const scalar z) noexcept
 
 int main(int argc, char const *args[])
 {
-    if (argc != 3)
+    if (argc != 4)
     {
-        std::cout << "USAGE: " << args[0] << " n " << "arch_name" << std::endl; 
+        std::cout << "USAGE: " << args[0] << " precond_type"<< " n" << " arch_name" << std::endl; 
+        std::cout << "    where precond_type is diag or mg" << std::endl;
         return 1;
     }
     std::string solv = "jacobi";
-    std::string size = args[1];
-    std::string arch = args[2];
+    std::string prec = args[1];
+    std::string size = args[2];
+    std::string arch = args[3];
     std::string type = std::is_same_v<float, scalar> ? "f" : "d";
 
-    int N        = std::stoi(args[1]);
+    int N        = std::stoi(args[2]);
     int num_iter = 100; 
     
+    log_t log;
 
     auto range = idx_nd_type   ::make_ones() *        N;
     auto step  = grid_step_type::make_ones() / scalar(N);
@@ -70,10 +73,31 @@ int main(int argc, char const *args[])
     
     
     auto l_op    = std::make_shared<lin_op_t> (range, step, cond);
-    auto precond = std::make_shared<smoother_t>(l_op);
+    
+    std::shared_ptr<precond_interface> precond;
+    if      (prec == "diag")
+    {
+        precond = std::make_shared<smoother_t>(l_op);
+    }
+    else if (prec == "mg")
+    {
+        mg_utils_t    mg_utils;
+        mg_params_t   mg_params;
+
+        mg_utils.log               = &log;
+        mg_params.direct_coarse    = false;
+        mg_params.num_sweeps_pre   = 3;
+        mg_params.num_sweeps_post  = 3;
+
+        precond = std::make_shared<mg_t>(mg_utils, mg_params);
+    }
+    else
+    {
+        std::cout << "precond_type is either diag or mg!" << std::endl;
+        return 1;
+    }
 
     jacobi_solver solver{vspace, l_op, precond};
-    
      
     std::vector<std::pair<int, scalar>> res_by_it; res_by_it.reserve(num_iter);
     std::chrono::duration<double, std::milli> elapsed_seconds; // aka T_solve
@@ -81,7 +105,8 @@ int main(int argc, char const *args[])
         auto start = std::chrono::steady_clock::now();
         for (std::size_t i=1; i <= num_iter; ++i)
         {
-            res_by_it.emplace_back(i, solver.make_step(rhs, tmp, x));
+            auto residual = solver.make_step(rhs, tmp, x);
+            res_by_it.emplace_back(i, residual);
         }
     
         auto end = std::chrono::steady_clock::now();
@@ -92,6 +117,7 @@ int main(int argc, char const *args[])
     std::string
     conv_file_name("data/conv_history_");
     conv_file_name += solv; conv_file_name += "_";
+    conv_file_name += prec; conv_file_name += "_";
     conv_file_name += arch; conv_file_name += "_";
     conv_file_name += size; conv_file_name += "_";
     conv_file_name += type; conv_file_name += ".dat";
@@ -99,7 +125,7 @@ int main(int argc, char const *args[])
     std::string exec_time_file_name("data/times.dat");
 
     std::ofstream conv_history(conv_file_name,      std::ios::out | std::ios::trunc);
-    std::ofstream exec_times  (exec_time_file_name, std::ios::out | std::ios::trunc);
+    std::ofstream exec_times  (exec_time_file_name, std::ios::out | std::ios::app  );
 
 
     conv_history << 0 << " " << 1.00 << std::endl; 
@@ -109,7 +135,8 @@ int main(int argc, char const *args[])
         conv_history << pair.first << " " << pair.second << std::endl; 
     });
     
-    exec_times << solv << "," << 
+    exec_times << solv << "," <<
+                  prec << "," <<
                   arch << "," << 
                   type << "," << 
                   N    << "," << exec_t.count() << "," << num_iter << std::endl;
