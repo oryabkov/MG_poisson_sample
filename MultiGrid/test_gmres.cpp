@@ -145,7 +145,7 @@ int main(int argc, char const *args[])
     auto [i_0,  init_res] = res_by_it.front();
     auto [i_n, final_res] = res_by_it.back();
 
-    auto conv_rate = std::pow(final_res/init_res, scalar(1)/res_by_it.size());
+    auto conv_rate = std::pow(final_res / init_res, scalar(1) / (i_n - i_0));
 
     exec_times <<
         solv << "," <<
