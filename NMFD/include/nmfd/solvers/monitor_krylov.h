@@ -37,9 +37,11 @@ protected:
     using parent_t::convergence_history_;
 public:    
     using parent_t::iters_performed;
-    using log_type = typename parent_t::logged_obj_type;
+    using logged_obj_type = typename parent_t::logged_obj_type;
+    using parent_t::norm_out;
     using parent_t::resid_norm_out;
     using parent_t::converged;
+    using parent_t::tol;
     using parent_t::tol_out;
 
     struct params : public parent_t::params
@@ -65,17 +67,27 @@ public:
     parent_t(vec_ops, log, prms)
     {}
 
-    bool check_finished_by_ritz_estimate(const T& ritz_val)
+    ///TODO what to do with max iters exit check?
+    ///TODO what to do with nans or infs?
+    bool check_finished_by_ritz_estimate(const T& ritz_resid_norm)
     {
-        parent_t::resid_norm_ = ritz_val;
-        parent_t::check_valid_norm();
-        log_type::info_f("iter = %d", iters_performed() );
-        log_type::info_f("resid norm = %0.6e tol = %0.6e", resid_norm_out(), tol_out() );
+        //logged_obj_type::info_f("iter = %d", iters_performed() );
+        //logged_obj_type::info_f("ritz resid norm = %0.6e tol = %0.6e", norm_out(ritz_resid_norm), tol_out());
+
         if (parent_t::prms_.save_convergence_history)
         {
-            convergence_history_.emplace_back( iters_performed(), resid_norm_out() );
+            convergence_history_.emplace_back( iters_performed(), norm_out(ritz_resid_norm) );
         }
-        return converged();
+
+        bool converged_by_ritz_norm = std::isfinite(ritz_resid_norm) && (ritz_resid_norm <= tol());
+
+        if (converged_by_ritz_norm)
+        {
+            logged_obj_type::info_f("converged by ritz residual norm at iter = %d", iters_performed());
+            logged_obj_type::info_f("ritz resid norm = %0.6e tol = %0.6e", norm_out(ritz_resid_norm), tol_out());
+        }
+
+        return converged_by_ritz_norm;
 
     }
 

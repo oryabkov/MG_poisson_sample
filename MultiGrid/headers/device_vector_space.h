@@ -26,7 +26,7 @@ template
     class IdxType=scfd::static_vec::vec<Ordinal, Dim>,
     class ParentType=nmfd::operations::vector_operations_base<Type, VectorType, MultiVectorType, Ordinal>
 >
-class device_vector_space : ParentType 
+class device_vector_space : public ParentType 
 {
     using parent_t = ParentType;
 
@@ -100,8 +100,9 @@ public: // Implementing Vector_Operations interface
 
     [[nodiscard]] bool is_valid_number(const vector_type &x) const override
     {
-        throw std::logic_error("device_vector_space: multivector.is_valid_number not implemented yet");
-        return true; //TODO 
+        return std::isfinite(sum(x));
+        //throw std::logic_error("device_vector_space: multivector.is_valid_number not implemented yet");
+        //return true; //TODO 
     }
     
     // reduction operations:

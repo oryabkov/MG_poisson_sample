@@ -31,14 +31,23 @@ using lin_op_t      = tests::device_laplace_op <vec_ops_t, log_t>;
 using smoother_t    = tests::device_jacobi_pre <vec_ops_t, log_t>;
 using coarsening_t  = tests::device_coarsening<lin_op_t, log_t>;
 
+using precond_interface = nmfd::preconditioners::preconditioner_interface<vec_ops_t,lin_op_t>;
+
 using mg_t = nmfd::preconditioners::mg
 <
     lin_op_t, restrictor_t, prolongator_t,
     smoother_t, ident_op_t, coarsening_t,
     log_t
 >;
+using mg_params_t = mg_t::params_hierarchy;
+using mg_utils_t = mg_t::utils_hierarchy;
+
 using jacobi_solver    = jacobi<vec_ops_t, lin_op_t, smoother_t>;
 using jacobi_mg_solver = jacobi<vec_ops_t, lin_op_t, mg_t>;
+
+using monitor_t = nmfd::solvers::monitor_krylov<vec_ops_t, log_t>;
+using gmres_solver = nmfd::solvers::gmres< vec_ops_t, monitor_t, log_t, lin_op_t, precond_interface>;
+
 
 using vector_t         = typename vec_ops_t::vector_type;
 using vector_view_t    = typename vector_t::view_type;

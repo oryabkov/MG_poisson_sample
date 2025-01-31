@@ -526,10 +526,9 @@ public:
                     previous_res = resid_estimate;
 
 
-                    if ( resid_estimate < monitor_.tol() ) //fix to tol
-                    {
-                        logged_obj_t::info_f("resid_estimate_out = %e monitor_.tol_out() = %e", monitor_.norm_out(resid_estimate), monitor_.tol_out());
 
+                    if ( monitor_.check_finished_by_ritz_estimate(resid_estimate) )
+                    {
                         if (prms_.do_restart_on_false_ritz_convergence) break;
 
                         vec_ops_->assign(x, x_tmp_);
@@ -564,9 +563,10 @@ public:
                         calc_left_preconditioned_residual(A, x, b, r_); 
                         residual_reg_->apply(r_);
 
-                        resid_estimate = vec_ops_->norm(r_);
-                        logged_obj_t::info_f("actual_residual = %e", monitor_.norm_out(resid_estimate));
-                        if(resid_estimate < monitor_.tol())
+                        //resid_estimate = vec_ops_->norm(r_);
+                        //logged_obj_t::info_f("actual_residual = %e", monitor_.norm_out(resid_estimate));
+                        //if (resid_estimate < monitor_.tol())
+                        if (monitor_.check_finished(x, r_))
                         {
                             converged_by_checked_ritz_norm = true;
                             break;
@@ -597,7 +597,7 @@ public:
                 }
 
             } 
-            while(!monitor_.check_finished(x, r_) );
+            while(!converged_by_checked_ritz_norm && !monitor_.check_finished(x, r_) );
 
         }
 

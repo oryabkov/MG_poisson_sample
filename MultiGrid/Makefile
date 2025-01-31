@@ -77,3 +77,38 @@ test_mg_cuda_f.bin: test_mg.cpp
 
 test_mg_sycl_f.bin: test_mg.cpp
 	icpx $(HOSTFLAGS) $(INCLUDE) -DSYCL_BACKEND test_mg.cpp -o test_mg_sycl_f.bin
+
+######################## GMRES SOLVER TESTS #################################
+
+
+test_gmres_cpu_d.bin: test_gmres.cpp
+	g++ $(HOSTFLAGS) $(INCLUDE) -DCPU_BACKEND -DUSE_DOUBLE_PRECISION test_gmres.cpp -o test_gmres_cpu_d.bin
+
+test_gmres_hip_d.bin: test_gmres.cpp
+	hipcc $(HOSTFLAGS) $(INCLUDE) -DHIP_BACKEND -DUSE_DOUBLE_PRECISION test_gmres.cpp -o test_gmres_hip_d.bin
+
+test_gmres_omp_d.bin: test_gmres.cpp
+	g++ -fopenmp $(HOSTFLAGS) $(INCLUDE) -DOMP_BACKEND -DUSE_DOUBLE_PRECISION test_gmres.cpp -o test_gmres_omp_d.bin
+
+test_gmres_cuda_d.bin: test_gmres.cpp
+	nvcc $(HOSTFLAGS) $(INCLUDE) -DCUDA_BACKEND -DUSE_DOUBLE_PRECISION -x cu test_gmres.cpp -o test_gmres_cuda_d.bin
+
+test_gmres_sycl_d.bin: test_gmres.cpp
+	icpx $(HOSTFLAGS) $(INCLUDE) -DSYCL_BACKEND -DUSE_DOUBLE_PRECISION test_gmres.cpp -o test_gmres_sycl_d.bin
+
+
+
+test_gmres_cpu_f.bin: test_gmres.cpp
+	g++ $(HOSTFLAGS) $(INCLUDE) -DCPU_BACKEND test_gmres.cpp -o test_gmres_cpu_f.bin
+
+test_gmres_hip_f.bin: test_gmres.cpp
+	hipcc $(HOSTFLAGS) $(INCLUDE) -DHIP_BACKEND test_gmres.cpp -o test_gmres_hip_f.bin
+
+test_gmres_omp_f.bin: test_gmres.cpp
+	g++ -fopenmp $(HOSTFLAGS) $(INCLUDE) -DOMP_BACKEND test_gmres.cpp -o test_gmres_omp_f.bin
+
+test_gmres_cuda_f.bin: test_gmres.cpp
+	nvcc $(HOSTFLAGS) $(INCLUDE) -DCUDA_BACKEND -x cu test_gmres.cpp -o test_gmres_cuda_f.bin
+
+test_gmres_sycl_f.bin: test_gmres.cpp
+	icpx $(HOSTFLAGS) $(INCLUDE) -DSYCL_BACKEND test_gmres.cpp -o test_gmres_sycl_f.bin

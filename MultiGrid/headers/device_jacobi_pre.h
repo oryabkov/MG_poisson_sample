@@ -2,6 +2,7 @@
 #define __DEVICE_JACOBI_PRE_H__
 
 #include <memory>
+#include <nmfd/preconditioners/preconditioner_interface.h>
 
 #include "device_laplace_op.h"
 #include "kernels/jacobi_pre.h"
@@ -9,8 +10,8 @@
 namespace tests 
 {
 
-template <class VectorSpace, class Log>
-class device_jacobi_pre 
+template <class VectorSpace, class Log, class LinOp = device_laplace_op<VectorSpace, Log>>
+class device_jacobi_pre : public nmfd::preconditioners::preconditioner_interface<VectorSpace,LinOp>
 {
     using lin_op_t           = device_laplace_op<VectorSpace, Log>;
 public:
@@ -87,6 +88,11 @@ public:
     {
         for_each_nd_type for_each_nd_inst;
         for_each_nd_inst(preconditioner_kernel{v, range, step, b_cond}, range);
+    };
+    void apply(const vector_type &x,vector_type &y) const
+    {
+        vspace->assign(x,y);
+        apply(y);
     };
 };
 
