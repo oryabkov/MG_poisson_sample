@@ -99,7 +99,7 @@ int main(int argc, char const *args[])
     }
 
     gmres_solver::params params_gmres;
-    params_gmres.monitor.rel_tol = std::is_same_v<float, scalar> ? 1e-7f : 1e-10;
+    params_gmres.monitor.rel_tol = std::is_same_v<float, scalar> ? 5e-6f : 1e-10;
     //params_gmres.monitor.rel_tol = 1.0e-6;
     params_gmres.monitor.max_iters_num = num_iter;
     params_gmres.monitor.save_convergence_history = true;
