@@ -154,7 +154,7 @@ int main(int argc, char const *args[])
         type << "," <<
         N    << "," <<
         exec_t.count() << "," <<
-        num_iter       << "," <<
+        i_n            << "," <<
         conv_rate
     << std::endl;    
 
