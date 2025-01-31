@@ -135,11 +135,21 @@ int main(int argc, char const *args[])
         conv_history << pair.first << " " << pair.second << std::endl; 
     });
     
-    exec_times << solv << "," <<
-                  prec << "," <<
-                  arch << "," << 
-                  type << "," << 
-                  N    << "," << exec_t.count() << "," << num_iter << std::endl;
+    auto [i_0,  init_res] = res_by_it.front();
+    auto [i_n, final_res] = res_by_it.back();
+
+    auto conv_rate = std::pow(final_res/init_res, scalar(1)/res_by_it.size());
+
+    exec_times <<
+        solv << "," <<
+        prec << "," <<
+        arch << "," <<
+        type << "," <<
+        N    << "," <<
+        exec_t.count() << "," <<
+        num_iter       << "," <<
+        conv_rate
+    << std::endl;    
     
     return 0;
 }
