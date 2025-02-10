@@ -9,7 +9,12 @@
 namespace tests
 {
 
-template <class VectorSpace, class Log>
+template
+<
+    class VectorSpace, class Log,
+    /**********************************************/
+    class Backend=typename VectorSpace::backend_type
+>
 class device_identity_op
 {
     using lin_op_t           = device_laplace_op<VectorSpace, Log>;
@@ -18,11 +23,12 @@ public:
     using vector_type        = typename VectorSpace::vector_type;
     using vector_space_type  = VectorSpace; // defines Vector Space working in
     using ordinal_type       = typename VectorSpace::ordinal_type;
-    
+
     using vector_space_ptr   = std::shared_ptr<VectorSpace>;
     using idx_nd_type        = typename VectorSpace::idx_nd_type;
-    using for_each_nd_type   = typename VectorSpace::for_each_nd_type;
-    
+
+    using for_each_nd_type   = typename Backend::for_each_nd_type;
+
 public: // Especially for SYCL
     using identity_kernel = kernels::identity<idx_nd_type, vector_type>;
 private:
@@ -60,6 +66,6 @@ public:
     };
 };
 
-}// namespace tests 
+}// namespace tests
 
 #endif

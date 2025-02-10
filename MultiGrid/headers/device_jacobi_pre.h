@@ -7,10 +7,16 @@
 #include "device_laplace_op.h"
 #include "kernels/jacobi_pre.h"
 
-namespace tests 
+namespace tests
 {
 
-template <class VectorSpace, class Log, class LinOp = device_laplace_op<VectorSpace, Log>>
+template
+<
+    class VectorSpace, class Log,
+    /**********************************************/
+    class LinOp=device_laplace_op<VectorSpace, Log>,
+    class Backend=typename VectorSpace::backend_type
+>
 class device_jacobi_pre : public nmfd::preconditioners::preconditioner_interface<VectorSpace,LinOp>
 {
     using lin_op_t           = device_laplace_op<VectorSpace, Log>;
@@ -25,7 +31,7 @@ public:
     using vector_type        = typename VectorSpace::vector_type;
     using idx_nd_type        = typename VectorSpace::idx_nd_type;
 
-    using for_each_nd_type   = typename VectorSpace::for_each_nd_type;
+    using for_each_nd_type   = typename Backend::for_each_nd_type;
 
     using grid_step_type     = scfd::static_vec::vec<scalar_type, dim>;
     using boundary_cond_type = boundary_cond<dim>;
@@ -45,7 +51,7 @@ private:
 public:
     struct params
     {
-        params(const std::string &log_prefix = "", 
+        params(const std::string &log_prefix = "",
                const std::string &log_name = "smoother_elliptic::") {}
     };
     using params_hierarchy = params;
@@ -54,13 +60,13 @@ public:
 
     device_jacobi_pre(const utils_hierarchy &u, const params_hierarchy &p) {}
 
-    device_jacobi_pre(vector_space_ptr   vec_space, 
+    device_jacobi_pre(vector_space_ptr   vec_space,
                       grid_step_type     grid_step,
                       boundary_cond_type cond) :
-        vspace(vec_space), 
-        range(vspace->get_range()), 
+        vspace(vec_space),
+        range(vspace->get_range()),
         step(grid_step), b_cond(cond) {}
-    
+
     device_jacobi_pre(std::shared_ptr<const lin_op_t> op){ set_operator(op); }
 
     void set_operator(std::shared_ptr<const lin_op_t> op)
@@ -71,16 +77,16 @@ public:
         b_cond = op->get_b_cond();
     }
 
-public:    
+public:
     vector_space_ptr        get_space()  const
     {
         return std::make_shared<vector_space_type>(range);
     }
-   
+
     idx_nd_type             get_size()   const noexcept { return range;  }
     grid_step_type          get_h()      const noexcept { return step;   }
     boundary_cond_type      get_b_cond() const noexcept { return b_cond; }
-    
+
     vector_space_ptr get_dom_space() const { return get_space(); }
     vector_space_ptr get_im_space()  const { return get_space(); }
 
@@ -96,6 +102,6 @@ public:
     };
 };
 
-}// namespace tests 
+}// namespace tests
 
 #endif

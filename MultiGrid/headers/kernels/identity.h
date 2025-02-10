@@ -12,8 +12,8 @@ struct identity
     VectorType dom, img;
 
     __DEVICE_TAG__ void operator()(const IdxND idx) const
-    { 
-        img(idx) = dom(idx);  
+    {
+        img(idx) = dom(idx);
     }
 };
 

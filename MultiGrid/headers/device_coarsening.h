@@ -9,7 +9,7 @@
 namespace tests
 {
 
-template<class LinearOperator, class Log> 
+template<class LinearOperator, class Log>
 class device_coarsening
 {
 public:
@@ -37,9 +37,9 @@ public:
 
     std::tuple
     <
-        std::shared_ptr<restrictor_type>, 
+        std::shared_ptr<restrictor_type>,
         std::shared_ptr<prolongator_type>
-    > 
+    >
     next_level(const operator_type &op)
     {
         return std::make_tuple
@@ -50,9 +50,9 @@ public:
 
     }
 
-    std::shared_ptr<operator_type> 
-    coarse_operator(const operator_type    &op, 
-                    const restrictor_type  &restrictor, 
+    std::shared_ptr<operator_type>
+    coarse_operator(const operator_type    &op,
+                    const restrictor_type  &restrictor,
                     const prolongator_type &prolongator)
     {
         using Ord    = ordinal_type;
@@ -61,7 +61,7 @@ public:
         (
             op.get_size() / Ord   {2},
             op.get_h()    * Scalar{2},
-            op.get_b_cond() 
+            op.get_b_cond()
         );
     }
 

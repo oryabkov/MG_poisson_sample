@@ -5,10 +5,15 @@
 
 #include "kernels/prolongate.h"
 
-namespace tests 
+namespace tests
 {
 
-template <class VectorSpace, class Log>
+template
+<
+    class VectorSpace, class Log,
+    /**********************************************/
+    class Backend=typename VectorSpace::backend_type
+>
 class device_prolongator
 {
 public:
@@ -16,12 +21,13 @@ public:
     using vector_type        = typename VectorSpace::vector_type;
     using vector_space_type  = VectorSpace; // defines Vector Space working in
     using ordinal_type       = typename VectorSpace::ordinal_type;
-    
+
     using Ord = ordinal_type;
 
     using vector_space_ptr   = std::shared_ptr<VectorSpace>;
     using idx_nd_type        = typename VectorSpace::idx_nd_type;
-    using for_each_nd_type   = typename VectorSpace::for_each_nd_type;
+
+    using for_each_nd_type   = typename Backend::for_each_nd_type;
 
 public: // Especially for SYCL
     using prolongator_kernel = kernels::prolongate
@@ -31,7 +37,7 @@ public: // Especially for SYCL
 private:
     idx_nd_type      range; // in im space
 public:
-    device_prolongator(idx_nd_type r) : range(r) // in im space 
+    device_prolongator(idx_nd_type r) : range(r) // in im space
     {
         for (int i=0; i<idx_nd_type::dim; ++i)
         {
@@ -41,7 +47,7 @@ public:
     }
 
     idx_nd_type get_size() const noexcept { return range; }
-    
+
     std::shared_ptr<vector_space_type> get_dom_space() const
     {
         return std::make_shared<vector_space_type>(range / Ord{2u});
@@ -50,7 +56,7 @@ public:
     {
         return std::make_shared<vector_space_type>(range);
     }
-    
+
     // domain -> (prolongate) -> image
     void apply(vector_type &from, vector_type &to) const
     {

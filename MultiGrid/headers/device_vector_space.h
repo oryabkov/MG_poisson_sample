@@ -11,14 +11,14 @@
 
 #include "kernels/vector_space.h"
 
-namespace nmfd 
+namespace nmfd
 {
 
 template
 <
     class Type,
     int   Dim,
-    class Backend, // class which defines for_each, reduce and memory types.
+    class Backend,
     class Ordinal=std::ptrdiff_t,
     /***********************************************************/
     class VectorType=scfd::arrays::array_nd<Type, Dim, typename Backend::memory_type>,
@@ -26,7 +26,7 @@ template
     class IdxType=scfd::static_vec::vec<Ordinal, Dim>,
     class ParentType=nmfd::operations::vector_operations_base<Type, VectorType, MultiVectorType, Ordinal>
 >
-class device_vector_space : public ParentType 
+class device_vector_space : public ParentType
 {
     using parent_t = ParentType;
 
@@ -36,6 +36,8 @@ public:
     using scalar_type          = Type;
     using ordinal_type         = Ordinal;
 
+    using backend_type         = Backend;
+
     using for_each_nd_type     = typename Backend::for_each_nd_type;
     using reduce_type          = typename Backend::reduce_type;
     using memory_type          = typename Backend::memory_type;
@@ -43,7 +45,7 @@ public:
     using multivector_type     = MultiVectorType;
     using vector_type          = VectorType;
     using idx_nd_type          = IdxType;
-    
+
 public: // Especially for SYCL
     using shur_prod_kernel       = kernels::shur_prod<idx_nd_type, vector_type>;
     using assign_scalar_kernel   = kernels::assign_scalar<idx_nd_type, scalar_type, vector_type>;
@@ -62,7 +64,7 @@ private:
     reduce_type           reduce_inst;
 
 public:
-    device_vector_space(idx_nd_type const r, bool use_high_precision = false): 
+    device_vector_space(idx_nd_type const r, bool use_high_precision = false):
         parent_t(use_high_precision), range(r), sz(r.components_prod()), helper(range) {};
     //sz is total size meanwhile range is vector space size
     idx_nd_type get_size() const noexcept { return range; }
@@ -70,10 +72,10 @@ public:
 public:
     void init_vector(vector_type& x) const { x.init(range); }
     void free_vector(vector_type& x) const { x.free();      }
-   
+
     void start_use_vector(vector_type& x) const {}
     void  stop_use_vector(vector_type& x) const {}
-    
+
     void init_multivector(multivector_type& x, ordinal_type m) const
     {
         x.clear();
@@ -84,7 +86,7 @@ public:
     {
         std::for_each_n(begin(x), m, [](vector_type& v){ v.free(); });
     }
-    
+
     void start_use_multivector(multivector_type& x, ordinal_type m) const {}
     void  stop_use_multivector(multivector_type& x, ordinal_type m) const {}
 
@@ -102,9 +104,9 @@ public: // Implementing Vector_Operations interface
     {
         return std::isfinite(sum(x));
         //throw std::logic_error("device_vector_space: multivector.is_valid_number not implemented yet");
-        //return true; //TODO 
+        //return true; //TODO
     }
-    
+
     // reduction operations:
     [[nodiscard]] scalar_type scalar_prod(const vector_type &x, const vector_type &y) const override
     {
@@ -190,6 +192,6 @@ public:
     }
 };
 
-}// namespace nmfd 
+}// namespace nmfd
 
 #endif

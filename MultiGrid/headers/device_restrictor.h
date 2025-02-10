@@ -8,20 +8,26 @@
 namespace tests
 {
 
-template <class VectorSpace, class Log>
-class device_restrictor 
+template
+<
+    class VectorSpace, class Log,
+    /**********************************************/
+    class Backend=typename VectorSpace::backend_type
+>
+class device_restrictor
 {
 public:
     using scalar_type        = typename VectorSpace::scalar_type;
     using vector_type        = typename VectorSpace::vector_type;
     using vector_space_type  = VectorSpace; // defines Vector Space working in
     using ordinal_type       = typename VectorSpace::ordinal_type;
-    
+
     using Ord = ordinal_type;
 
     using vector_space_ptr   = std::shared_ptr<VectorSpace>;
     using idx_nd_type        = typename VectorSpace::idx_nd_type;
-    using for_each_nd_type   = typename VectorSpace::for_each_nd_type;
+
+    using for_each_nd_type   = typename Backend::for_each_nd_type;
 
 public: // Especially for SYCL
     using restrictor_kernel = kernels::restrict
@@ -31,7 +37,7 @@ public: // Especially for SYCL
 private:
     idx_nd_type      range; // in dom space
 public:
-    device_restrictor(idx_nd_type r): range(r) // in dom space 
+    device_restrictor(idx_nd_type r): range(r) // in dom space
     {
         for (int i=0; i<idx_nd_type::dim; ++i)
         {
@@ -60,6 +66,6 @@ public:
     };
 };
 
-}// namespace tests 
+}// namespace tests
 
 #endif

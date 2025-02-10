@@ -12,11 +12,11 @@ struct prolongate
     VectorType dom, img;
 
     __DEVICE_TAG__ void operator()(const IdxND idx) const
-    { 
+    {
         const auto & curr = idx;
         const auto   half = idx / Ord{2};
-        
-        img(curr) = dom(half);  
+
+        img(curr) = dom(half);
     }
 };
 
