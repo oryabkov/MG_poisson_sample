@@ -52,7 +52,7 @@ public:
     struct params
     {
         params(const std::string &log_prefix = "",
-               const std::string &log_name = "smoother_elliptic::") {}
+               const std::string &log_name   = "smoother_elliptic::") {}
     };
     using params_hierarchy = params;
     struct utils {};

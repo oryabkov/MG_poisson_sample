@@ -69,14 +69,16 @@ public:
 
     Monitor         &monitor() { return monitor_; }
     const Monitor   &monitor()const { return monitor_; }
-
-    /*void set_preconditioner(std::shared_ptr<preconditioner_type> prec) 
+//TODO 
+#if 0
+    void set_preconditioner(std::shared_ptr<preconditioner_type> prec) 
     { 
         prec_ = prec; 
-    }*/
-
+    }
+#endif
     virtual bool solve(const linear_operator_type &A, const vector_type &b, 
                        vector_type &x)const = 0;
+    
     virtual void set_operator(std::shared_ptr<const linear_operator_type> A)
     {
         A_ = std::move(A);
@@ -85,6 +87,7 @@ public:
             prec_->set_operator(A_);
         }
     }
+    
     virtual bool solve(const vector_type &b, vector_type &x)const = 0;
 
     virtual ~iter_solver_base()

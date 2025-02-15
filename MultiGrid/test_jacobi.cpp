@@ -96,18 +96,19 @@ int main(int argc, char const *args[])
         std::cout << "precond_type is either diag or mg!" << std::endl;
         return 1;
     }
+    jacobi_solver::params params_jacobi;
+    params_jacobi.monitor.rel_tol = std::is_same_v<float, scalar> 
+                                 ? 5e-6f : 1e-10;
+    params_jacobi.monitor.max_iters_num = num_iter;
+    params_jacobi.monitor.save_convergence_history = true; 
+    jacobi_solver solver{l_op, vspace, &log, params_jacobi, precond};
+    
 
-    jacobi_solver solver{vspace, l_op, precond};
-     
-    std::vector<std::pair<int, scalar>> res_by_it; res_by_it.reserve(num_iter);
     std::chrono::duration<double, std::milli> elapsed_seconds; // aka T_solve
     {
         auto start = std::chrono::steady_clock::now();
-        for (std::size_t i=1; i <= num_iter; ++i)
-        {
-            auto residual = solver.make_step(rhs, tmp, x);
-            res_by_it.emplace_back(i, residual);
-        }
+        
+        bool conv_res = solver.solve(rhs, x);
     
         auto end = std::chrono::steady_clock::now();
         elapsed_seconds = (end - start);
@@ -127,8 +128,7 @@ int main(int argc, char const *args[])
     std::ofstream conv_history(conv_file_name,      std::ios::out | std::ios::trunc);
     std::ofstream exec_times  (exec_time_file_name, std::ios::out | std::ios::app  );
 
-
-    conv_history << 0 << " " << 1.00 << std::endl; 
+    auto res_by_it = solver.monitor().convergence_history();
     std::for_each(begin(res_by_it), end(res_by_it), 
     [&](std::pair<int, scalar> &pair)
     { 

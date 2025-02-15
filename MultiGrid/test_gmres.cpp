@@ -135,7 +135,6 @@ int main(int argc, char const *args[])
     std::ofstream exec_times  (exec_time_file_name, std::ios::out | std::ios::app);
 
     auto res_by_it = gmres.monitor().convergence_history();
-    //conv_history << 0 << " " << 1.00 << std::endl; 
     std::for_each(begin(res_by_it), end(res_by_it), 
     [&](std::pair<int, scalar> &pair)
     { 
