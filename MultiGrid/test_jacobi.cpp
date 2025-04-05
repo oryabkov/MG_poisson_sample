@@ -6,6 +6,7 @@
 #include <type_traits>
 
 #include "types.h"
+#include "output_funcs.h"
 
 auto const f = [](const scalar x, const scalar y, const scalar z) noexcept
 {
@@ -19,13 +20,17 @@ auto const u = [](const scalar x, const scalar y, const scalar z) noexcept
     return x * (1-x) * y * (1-y) * z * (1-z);
 };
 
+using output_func_t = detail::output_funcs;
 
 int main(int argc, char const *args[])
 {
-    if (argc != 4)
+    if (argc < 4)
     {
-        std::cout << "USAGE: " << args[0] << " precond_type"<< " n" << " arch_name" << std::endl; 
+        std::cout << "USAGE: " << args[0] << " precond_type"<< " n" << " arch_name" << " [dat_vis_prefix] [pos_vis_prefix] [vis_freq] [max_vis_iters]" << std::endl; 
         std::cout << "    where precond_type is diag or mg" << std::endl;
+        std::cout << "    where dat_vis_prefix and pos_vis_prefix are binary and gmsh visualization files prefixes (use none to ommit corresponding output which is default)" << std::endl;
+        std::cout << "    where vis_freq is iterations interval between visualization frames output" << std::endl;
+        std::cout << "    where max_vis_iters is iterations interval between visualization frames output" << std::endl;
         return 1;
     }
     std::string solv = "jacobi";
@@ -33,6 +38,10 @@ int main(int argc, char const *args[])
     std::string size = args[2];
     std::string arch = args[3];
     std::string type = std::is_same_v<float, scalar> ? "f" : "d";
+    std::string dat_vis_prefix = (argc >= 5 ? args[4] : "none");
+    std::string pos_vis_prefix = (argc >= 6 ? args[5] : "none");
+    int         vis_freq = (argc >= 7 ? std::stoi(args[6]) : 10);
+    int         max_vis_iters = (argc >= 8 ? std::stoi(args[7]) : 100);
 
     int N        = std::stoi(args[2]);
     int num_iter = 100; 
@@ -102,6 +111,9 @@ int main(int argc, char const *args[])
     params_jacobi.monitor.max_iters_num = num_iter;
     params_jacobi.monitor.save_convergence_history = true; 
     jacobi_solver solver{l_op, vspace, &log, params_jacobi, precond};
+
+    auto vis_func = std::make_shared<output_func_t>(pos_vis_prefix, dat_vis_prefix, vis_freq, max_vis_iters, step);
+    solver.monitor().set_custom_funcs(vis_func);
     
 
     std::chrono::duration<double, std::milli> elapsed_seconds; // aka T_solve

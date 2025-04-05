@@ -1,6 +1,8 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+#include "config.h"
+
 #include <scfd/utils/log.h>
 #include <nmfd/preconditioners/mg.h>
 #include <nmfd/solvers/monitor_krylov.h>
@@ -18,7 +20,6 @@
 #include "include/boundary.h"
 #include "solvers/jacobi.h" //TODO move to nmfd
 
-#include "config.h"
 #include "backend.h"
 
 using grid_step_type   = scfd::static_vec::vec<scalar, dim>;
@@ -30,6 +31,8 @@ using vec_ops_t     = nmfd::device_vector_space<scalar, dim, backend>;
 
 using krylov_monitor_t  = nmfd::solvers::monitor_krylov<vec_ops_t, log_t>;
 using default_monitor_t = nmfd::solvers::default_monitor<vec_ops_t, log_t>; 
+using monitor_funcs_t   = default_monitor_t::custom_funcs_type;
+using monitor_funcs_ptr = default_monitor_t::custom_funcs_ptr;
 
 using prolongator_t = tests::device_prolongator<vec_ops_t, log_t>;
 using restrictor_t  = tests::device_restrictor <vec_ops_t, log_t>;

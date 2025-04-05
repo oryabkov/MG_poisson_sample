@@ -32,6 +32,14 @@ namespace nmfd
 namespace solvers 
 {
 
+template<class Vector>
+class monitor_custom_funcs
+{
+public:
+    //TODO think about full custom check - ie with return bool value
+    virtual void check_finished(int iters_performed, const Vector& x, const Vector& r) = 0;
+};
+
 template<class VectorOperations, class Log>
 class default_monitor : public scfd::utils::logged_obj_base<Log>
 {
@@ -40,6 +48,8 @@ public:
     using vector_type = typename VectorOperations::vector_type;
     using vector_operations_type = VectorOperations;
     using logged_obj_type = scfd::utils::logged_obj_base<Log>;
+    using custom_funcs_type = monitor_custom_funcs<vector_type>;
+    using custom_funcs_ptr = std::shared_ptr<custom_funcs_type>;
 
 private:
     using T = scalar_type;
@@ -97,7 +107,6 @@ public:
     };
 
 private:
-
     T rel_tol_save_;
     int max_iters_num_save_;
     
@@ -112,8 +121,10 @@ private:
 
 
 protected:
-    std::vector< std::pair<int,T> >  convergence_history_;
     params prms_;
+    custom_funcs_ptr custom_funcs_;
+
+    std::vector< std::pair<int,T> >  convergence_history_;
     T resid_norm_;
 
 public:
@@ -121,7 +132,7 @@ public:
                     Log *log = NULL, const params &prms = params() ): 
         logged_obj_type(log, prms),
         vec_ops_(vec_ops), min_resid_norm_x_(vec_ops),
-        prms_(prms)
+        prms_(prms), custom_funcs_(nullptr)
     {
        
         max_iters_num_save_ = prms_.max_iters_num;
@@ -139,6 +150,10 @@ public:
     void set_divide_out_norms_by_rel_base(bool divide_out_norms_by_rel_base)
     {
         prms_.divide_out_norms_by_rel_base = divide_out_norms_by_rel_base;
+    }
+    void set_custom_funcs(custom_funcs_ptr custom_funcs)
+    {
+        custom_funcs_ = custom_funcs;
     }
     //TODO init with config
     //TODO add separate function to control tolerances and behaviour
@@ -240,6 +255,8 @@ public:
     bool check_finished(const vector_type& x, const vector_type& r)
     {
         logged_obj_type::info_f("iter = %d, max_iters_num = %d", iters_performed(), max_iters_num() );
+
+        if (custom_funcs_) custom_funcs_->check_finished(iters_performed(), x, r);
 
         is_valid_number_ = vec_ops_.is_valid_number(x);
         if (!is_valid_number_) 
